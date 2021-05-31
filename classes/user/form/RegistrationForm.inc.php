@@ -238,6 +238,7 @@ class RegistrationForm extends Form {
 		$user->setEmail($this->getData('email'));
 		$user->setCountry($this->getData('country'));
 		$user->setAffiliation($this->getData('affiliation'), $currentLocale);
+		$user->setStatus($this->getData('status'));
 
 		if ($sitePrimaryLocale != $currentLocale) {
 			$user->setGivenName($this->getData('givenName'), $sitePrimaryLocale);
