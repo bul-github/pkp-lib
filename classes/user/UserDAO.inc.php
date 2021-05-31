@@ -84,6 +84,20 @@ class UserDAO extends DAO {
 	}
 
 	/**
+	 * Retrieve a user by ldap.
+	 * @param $ldap string
+	 * @return PKPUser
+	 */
+	function getUserByLdap($ldap) {
+		$result = $this->retrieve(
+			'SELECT * FROM users WHERE ldap = ? AND disabled = 0',
+			array($ldap)
+		);
+		$row = $result->current();
+		return $row?$this->_returnUserFromRowWithData((array) $row):null;
+	}
+
+	/**
 	 * Get the user by the TDL ID (implicit authentication).
 	 * @param $authstr string
 	 * @param $allowDisabled boolean
@@ -272,6 +286,7 @@ class UserDAO extends DAO {
 		$user->setAuthId($row['auth_id']);
 		$user->setAuthStr($row['auth_str']);
 		$user->setInlineHelp($row['inline_help']);
+		$user->setLdap($row['ldap']);
 		$user->setStatus($row['status_id']);
 		$user->setGossip($row['gossip']);
 
@@ -293,9 +308,9 @@ class UserDAO extends DAO {
 		}
 		$this->update(
 			sprintf('INSERT INTO users
-				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, status_id, gossip)
+				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, ldap, status_id, gossip)
 				VALUES
-				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?, ?)',
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				$this->datetimeToDB($user->getDateLastEmail()), $this->datetimeToDB($user->getDateRegistered()), $this->datetimeToDB($user->getDateValidated()), $this->datetimeToDB($user->getDateLastLogin())),
 			[
 				$user->getUsername(),
@@ -313,6 +328,7 @@ class UserDAO extends DAO {
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
 				(int) $user->getInlineHelp(),
+				$user->getLdap(),
 				(int) $user->getStatus(),
 				$user->getGossip(),
 			]
@@ -387,6 +403,7 @@ class UserDAO extends DAO {
 					auth_id = ?,
 					auth_str = ?,
 					inline_help = ?,
+					ldap = ?,
 					status_id = ?,
 					gossip = ?
 				WHERE	user_id = ?',
@@ -407,6 +424,7 @@ class UserDAO extends DAO {
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
 				(int) $user->getInlineHelp(),
+				$user->getLdap(),
 				(int) $user->getStatus(),
 				$user->getGossip(),
 				(int) $user->getId(),
