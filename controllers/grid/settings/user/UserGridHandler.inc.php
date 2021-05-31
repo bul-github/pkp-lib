@@ -276,7 +276,8 @@ class UserGridHandler extends GridHandler {
 		if (!$userId) $userId = $request->getUserVar('userId');
 
 		$user = $request->getUser();
-		if ($userId !== null && !Validation::canAdminister($userId, $user->getId())) {
+		$contextId = $request->getContext()->getId();
+		if ($userId !== null && !Validation::canAdminister($userId, $user->getId(), $contextId)) {
 			// We don't have administrative rights over this user.
 			return new JSONMessage(false, __('grid.user.cannotAdminister'));
 		} else {
@@ -299,8 +300,9 @@ class UserGridHandler extends GridHandler {
 
 		// Identify the user Id.
 		$userId = $request->getUserVar('userId');
+		$contextId = $request->getContext()->getId();
 
-		if ($userId !== null && !Validation::canAdminister($userId, $user->getId())) {
+		if ($userId !== null && !Validation::canAdminister($userId, $user->getId(), $contextId)) {
 			// We don't have administrative rights over this user.
 			return new JSONMessage(false, __('grid.user.cannotAdminister'));
 		}
@@ -448,7 +450,7 @@ class UserGridHandler extends GridHandler {
 		// Identify the user Id.
 		$userId = $request->getUserVar('rowId');
 
-		if ($userId !== null && !Validation::canAdminister($userId, $user->getId())) {
+		if ($userId !== null && !Validation::canAdminister($userId, $user->getId(), $context->getId())) {
 			// We don't have administrative rights over this user.
 			return new JSONMessage(false, __('grid.user.cannotAdminister'));
 		}

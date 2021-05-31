@@ -411,9 +411,10 @@ class Validation {
 	 * Check whether a user is allowed to administer another user.
 	 * @param $administeredUserId int User ID of user to potentially administer
 	 * @param $administratorUserId int User ID of user who wants to do the administrating
+	 * @param $contextId int The current user context ID.
 	 * @return boolean True IFF the administration operation is permitted
 	 */
-	static function canAdminister($administeredUserId, $administratorUserId) {
+	static function canAdminister($administeredUserId, $administratorUserId, $contextId = 0) {
 		$roleDao = DAORegistry::getDAO('RoleDAO'); /* @var $roleDao RoleDAO */
 
 		// You can administer yourself
@@ -424,6 +425,11 @@ class Validation {
 
 		// Otherwise, administrators can administer everyone
 		if ($roleDao->userHasRole(CONTEXT_SITE, $administratorUserId, ROLE_ID_SITE_ADMIN)) return true;
+
+		// For UL, redactors should be able to add anyone in the common user list into their journal.
+		if ($contextId && $roleDao->userHasRole($contextId, $administratorUserId, ROLE_ID_MANAGER)) {
+			return true;
+		}
 
 		// Check for administered user group assignments in other contexts
 		// that the administrator user doesn't have a manager role in.
