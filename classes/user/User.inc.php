@@ -336,6 +336,22 @@ class User extends Identity {
 		$this->setData('inlineHelp', $inlineHelp);
 	}
 
+	/**
+	 * Get the ldap key for this user.
+	 * @return string
+	 */
+	function getLdap() {
+		return $this->getData('ldap');
+	}
+
+	/**
+	 * Set the ldap key for this user.
+	 * @param $ldap string
+	 */
+	function setLdap($ldap) {
+		$this->setData('ldap', $ldap);
+	}
+
 	function getContactSignature() {
 		$signature = htmlspecialchars($this->getFullName());
 		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_USER);
