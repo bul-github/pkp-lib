@@ -198,6 +198,7 @@
 		</field>
 		<field name="disabled_reason" type="X"/>
 		<field name="inline_help" type="I1" />
+		<field name="ldap" type="C2" size="32"/>
 		<descr>User authentication credentials and profile data.</descr>
 		<index name="users_username">
 			<col>username</col>
