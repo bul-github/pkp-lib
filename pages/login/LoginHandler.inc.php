@@ -119,13 +119,25 @@ class LoginHandler extends Handler {
 		} else {
 			$sessionManager = SessionManager::getManager();
 			$session = $sessionManager->getUserSession();
+			if (!$reason) {
+				$error = 'user.login.loginError';
+			}
+			else if (strpos($reason, 'plugins.auth.ldap.') === 0) {
+				$error = $reason;
+			}
+			else if ($reason === '') {
+				$error = 'user.login.accountDisabled';
+			}
+			else {
+				$error = 'user.login.accountDisabledWithReason';
+			}
 			$templateMgr = TemplateManager::getManager($request);
 			$templateMgr->assign(array(
 				'username' => $request->getUserVar('username'),
 				'remember' => $request->getUserVar('remember'),
 				'source' => $request->getUserVar('source'),
 				'showRemember' => Config::getVar('general', 'session_lifetime') > 0,
-				'error' => $reason===null?'user.login.loginError':($reason===''?'user.login.accountDisabled':'user.login.accountDisabledWithReason'),
+				'error' => $error,
 				'reason' => $reason,
 			));
 			$templateMgr->display('frontend/pages/userLogin.tpl');
