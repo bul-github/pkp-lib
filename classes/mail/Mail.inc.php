@@ -261,7 +261,8 @@ class Mail extends DataObject {
 	 * @param $contentDisposition string attachment content disposition, inline or attachment (optional, default attachment)
 	 */
 	function addAttachment($filePath, $fileName = '', $contentType = '', $contentDisposition = 'attachment') {
-		if ($attachments =& $this->getData('attachments') == null) {
+		$attachments =& $this->getData('attachments');
+		if ($attachments == null) {
 			$attachments = array();
 		}
 
@@ -336,10 +337,10 @@ class Mail extends DataObject {
 	* @param $name string optional
 	*/
 	function addReplyTo($email, $name = '') {
-		if (($replyTos = $this->getData('replyTo')) == null) {
-			$replyTos = array();
+		if (($replyTo = $this->getData('replyTo')) == null) {
+			$replyTo = array();
 		}
-		array_push($replyTos, array('name' => $name, 'email' => $email));
+		array_push($replyTo, array('name' => $name, 'email' => $email));
 
 		$this->setData('replyTo', $replyTo);
 	}
