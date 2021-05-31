@@ -46,6 +46,32 @@ class NativeImportExportFilter extends PersistableFilter {
 	function getDeployment() {
 		return $this->_deployment;
 	}
+
+	function addWarning($context, $category, $message) {
+		$userImportWarnings = $context->getData($category);
+		if (is_null($userImportWarnings)) {
+			$userImportWarnings = array();
+		}
+		array_push($userImportWarnings,  $message);
+		$context->setData($category, $userImportWarnings);
+	}
+
+	function sendEmail($context, $user, $password) {
+		// Send email with new password
+		import('lib.pkp.classes.mail.MailTemplate');
+		$mail = new MailTemplate('USER_REGISTER');
+		$mail->setReplyTo($context->getSetting('contactEmail'), $context->getSetting('contactName'));
+		$mail->setFrom($context->getSetting('contactEmail'), $context->getSetting('contactName'));
+		$mail->assignParams(array(
+			'userFullName' => $user->getFullName(),
+			'username' => $user->getUsername(),
+			'password' => $password,
+			'contextName' => $context->getLocalizedName()
+		));
+		$mail->addRecipient($user->getEmail(), $user->getFullName());
+		$mail->send();
+		unset($mail);
+	}
 }
 
 

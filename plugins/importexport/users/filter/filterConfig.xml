@@ -25,6 +25,13 @@
 			description="plugins.importexport.users.description"
 			inputType="xml::schema(lib/pkp/plugins/importexport/users/pkp-users.xsd)"
 			outputType="class::classes.users.User[]" />
+		<!-- Native XML OJS 2 Users input -->
+		<filterGroup
+			symbolic="user-xml-ojs2=>user"
+			displayName="plugins.importexport.users.displayName"
+			description="plugins.importexport.users.description"
+			inputType="xml::*"
+			outputType="class::classes.users.User[]" />
 		<!-- Native XML usergroup output -->
 		<filterGroup
 			symbolic="usergroup=>user-xml"
@@ -39,6 +46,13 @@
 			description="plugins.importexport.native.description"
 			inputType="xml::schema(lib/pkp/plugins/importexport/users/pkp-users.xsd)"
 			outputType="class::lib.pkp.classes.security.UserGroup[]" />
+		<!-- CSV Users input -->
+		<filterGroup
+			symbolic="user-csv=>user"
+			displayName="plugins.importexport.users.displayName"
+			description="plugins.importexport.users.description"
+			inputType="primitive::string"
+			outputType="class::classes.users.User[]" />
 	</filterGroups>
 	<filters>
 		<!-- Native XML users output -->
@@ -51,6 +65,11 @@
 			inGroup="user-xml=>user"
 			class="lib.pkp.plugins.importexport.users.filter.UserXmlPKPUserFilter"
 			isTemplate="0" />
+		<!-- Native XML OJS 2 users input -->
+		<filter
+			inGroup="user-xml-ojs2=>user"
+			class="lib.pkp.plugins.importexport.users.filter.UserXmlOJS2PKPUserFilter"
+			isTemplate="0" />
 		<!-- Native XML usergroup output -->
 		<filter
 			inGroup="usergroup=>user-xml"
@@ -60,6 +79,11 @@
 		<filter
 			inGroup="user-xml=>usergroup"
 			class="lib.pkp.plugins.importexport.users.filter.NativeXmlUserGroupFilter"
+			isTemplate="0" />
+		<!-- CSV users input -->
+		<filter
+			inGroup="user-csv=>user"
+			class="lib.pkp.plugins.importexport.users.filter.UserCsvPKPUserFilter"
 			isTemplate="0" />
 	</filters>
 </filterConfig>

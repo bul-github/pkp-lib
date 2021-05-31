@@ -96,14 +96,24 @@ abstract class PKPUserImportExportPlugin extends ImportExportPlugin {
 			case 'importBounce':
 				if (!$request->checkCSRF()) throw new Exception('CSRF mismatch!');
 				$json = new JSONMessage(true);
+				$temporaryFileId = $request->getUserVar('temporaryFileId');
+				$importFormat = $request->getUserVar('importFormat');
+				$sendConfirmationEmail = $request->getUserVar('sendConfirmationEmail');
 				$json->setEvent('addTab', array(
 					'title' => __('plugins.importexport.users.results'),
-					'url' => $request->url(null, null, null, array('plugin', $this->getName(), 'import'), array('temporaryFileId' => $request->getUserVar('temporaryFileId'))),
+					'url' => $request->url(null, null, null, array('plugin', $this->getName(), 'import'),
+						array(
+							'temporaryFileId' => $temporaryFileId,
+							'importFormat' => $importFormat,
+							'sendConfirmationEmail' => $sendConfirmationEmail,
+						)),
 				));
 				header('Content-Type: application/json');
 				return $json->getString();
 			case 'import':
 				$temporaryFileId = $request->getUserVar('temporaryFileId');
+				$importFormat = $request->getUserVar('importFormat');
+				$sendConfirmationEmail = $request->getUserVar('sendConfirmationEmail');
 				$temporaryFileDao = DAORegistry::getDAO('TemporaryFileDAO'); /* @var $temporaryFileDao TemporaryFileDAO */
 				$user = $request->getUser();
 				$temporaryFile = $temporaryFileDao->getTemporaryFile($temporaryFileId, $user->getId());
@@ -113,16 +123,33 @@ abstract class PKPUserImportExportPlugin extends ImportExportPlugin {
 					return $json->getString();
 				}
 				$temporaryFilePath = $temporaryFile->getFilePath();
-				libxml_use_internal_errors(true);
+				$filter = null;
+				if ($importFormat == 'ojs2') {
+					$context->setData('sendConfirmationEmail', $sendConfirmationEmail);
+					$users = $this->importUsersOJS2(file_get_contents($temporaryFilePath), $context, $user);
+					if ($context->getData('userImportWarnings')) {
+						$templateMgr->assign('userImportWarnings', $context->getData('userImportWarnings'));
+					}
+				}
+				elseif ($importFormat == 'csv') {
+					$context->setData('sendConfirmationEmail', $sendConfirmationEmail);
+					$users = $this->importUsersCSV(utf8_encode(file_get_contents($temporaryFilePath)), $context, $user);
+					if ($context->getData('userImportWarnings')) {
+						$templateMgr->assign('userImportWarnings', $context->getData('userImportWarnings'));
+					}
+				}
+				else {
+					libxml_use_internal_errors(true);
 
-				$filter = $this->getUserImportExportFilter($context, $user);
-				$users = $this->importUsers(file_get_contents($temporaryFilePath), $context, $user, $filter);
+					$filter = $this->getUserImportExportFilter($context, $user);
+					$users = $this->importUsers(file_get_contents($temporaryFilePath), $context, $user, $filter);
+				}
 				$validationErrors = array_filter(libxml_get_errors(), function($a) {
 					return $a->level == LIBXML_ERR_ERROR || $a->level == LIBXML_ERR_FATAL;
 				});
 				$templateMgr->assign('validationErrors', $validationErrors);
 				libxml_clear_errors();
-				if ($filter->hasErrors()) {
+				if ($filter && $filter->hasErrors()) {
 					$templateMgr->assign('filterErrors', $filter->getErrors());
 				}
 				$templateMgr->assign('users', $users);
@@ -253,6 +280,40 @@ abstract class PKPUserImportExportPlugin extends ImportExportPlugin {
 		$filter->setDeployment(new PKPUserImportExportDeployment($context, $user));
 
 		return $filter;
+	}
+
+	/**
+	 * Get the OJS 2 XML for a set of users.
+	 * @param $importXml string XML contents to import
+	 * @param $context Context
+	 * @param $user User
+	 * @return array Set of imported users
+	 */
+	function importUsersOJS2($importXml, $context, $user) {
+		$filterDao = DAORegistry::getDAO('FilterDAO');
+		$userImportFilters = $filterDao->getObjectsByGroup('user-xml-ojs2=>user');
+		assert(count($userImportFilters) == 1); // Assert only a single unserialization filter
+		$importFilter = array_shift($userImportFilters);
+		$importFilter->setDeployment(new PKPUserImportExportDeployment($context, $user));
+
+		return $importFilter->execute($importXml);
+	}
+
+	/**
+	 * Get the CSV for a set of users.
+	 * @param $importCsv string CSV contents to import
+	 * @param $context Context
+	 * @param $user User
+	 * @return array Set of imported users
+	 */
+	function importUsersCSV($importCsv, $context, $user) {
+		$filterDao = DAORegistry::getDAO('FilterDAO');
+		$userImportFilters = $filterDao->getObjectsByGroup('user-csv=>user');
+		assert(count($userImportFilters) == 1); // Assert only a single unserialization filter
+		$importFilter = array_shift($userImportFilters);
+		$importFilter->setDeployment(new PKPUserImportExportDeployment($context, $user));
+
+		return $importFilter->execute($importCsv);
 	}
 }
 

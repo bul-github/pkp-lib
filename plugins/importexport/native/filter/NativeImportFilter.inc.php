@@ -34,33 +34,42 @@ class NativeImportFilter extends NativeImportExportFilter {
 	 * @return array Array of imported documents
 	 */
 	function &process(&$document) {
+		$xmlIsValid = false;
 		// If necessary, convert $document to a DOMDocument.
 		if (is_string($document)) {
 			$xmlString = $document;
 			$document = new DOMDocument();
-			$document->loadXml($xmlString);
+			$xmlIsValid = $document->loadXml($xmlString);
 		}
 		assert(is_a($document, 'DOMDocument'));
 
 		$deployment = $this->getDeployment();
 		$importedObjects = array();
-		if ($document->documentElement->tagName == $this->getPluralElementName()) {
-			// Multiple element (plural) import
-			for ($n = $document->documentElement->firstChild; $n !== null; $n=$n->nextSibling) {
-				if (!is_a($n, 'DOMElement')) continue;
-				$object = $this->handleElement($n);
+		if (is_null($document) or !$xmlIsValid) {
+			$this->addWarning($deployment->getContext(), 'userImportWarnings', __('plugins.importexport.users.userImportWarning.malformedXml'));
+		}
+		else {
+			if ($document->documentElement->tagName == $this->getPluralElementName()) {
+				// Multiple element (plural) import
+				for ($n = $document->documentElement->firstChild; $n !== null; $n = $n->nextSibling) {
+					if (!is_a($n, 'DOMElement')) continue;
+					$object = $this->handleElement($n);
+					if ($object) {
+						$importedObjects[] = $object;
+					}
+				}
+			} else {
+				assert($document->documentElement->tagName == $this->getSingularElementName());
+
+				// Single element (singular) import
+				$object = $this->handleElement($document->documentElement);
 				if ($object) {
 					$importedObjects[] = $object;
 				}
 			}
-		} else {
-			assert($document->documentElement->tagName == $this->getSingularElementName());
-
-			// Single element (singular) import
-			$object = $this->handleElement($document->documentElement);
-			if ($object) {
-				$importedObjects[] = $object;
-			}
+		}
+		if (empty($importedObjects)) {
+			$this->addWarning($deployment->getContext(), 'userImportWarnings', __('plugins.importexport.users.userImportWarning.nothingImported'));
 		}
 
 		return $importedObjects;
