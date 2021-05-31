@@ -59,7 +59,12 @@ class PluginHelper {
 		$output = '';
 		$returnCode = 0;
 		if (in_array('exec', explode(',', ini_get('disable_functions')))) throw new Exception('The "exec" PHP function has been disabled on your server. Contact your system adminstrator to enable it.');
-		exec($tarBinary.' -xzf ' . escapeshellarg($filePath) . ' -C ' . escapeshellarg($pluginExtractDir), $output, $returnCode);
+		if (strpos($tarBinary, '7z.exe') !== false) {
+			exec(escapeshellarg($tarBinary) . ' x ' . escapeshellarg($filePath) . ' -so | ' . escapeshellarg($tarBinary) . ' x -aoa -si -ttar -o' . escapeshellarg($pluginExtractDir), $output, $returnCode);
+		}
+		else {
+			exec($tarBinary . ' -xzf ' . escapeshellarg($filePath) . ' -C ' . escapeshellarg($pluginExtractDir), $output, $returnCode);
+		}
 		if ($returnCode) {
 			$fileManager->rmtree($pluginExtractDir);
 			throw new Exception(__('form.dropzone.dictInvalidFileType'));
