@@ -118,6 +118,7 @@ class UserDetailsForm extends UserForm {
 				'orcid' => $user->getOrcid(),
 				'mailingAddress' => $user->getMailingAddress(),
 				'country' => $user->getCountry(),
+				'status' => $user->getStatus(),
 				'biography' => $user->getBiography(null), // Localized
 				'interests' => $interestManager->getInterestsForUser($user),
 				'userLocales' => $user->getLocales(),
@@ -139,6 +140,7 @@ class UserDetailsForm extends UserForm {
 				'userUrl' => $author->getUrl(),
 				'orcid' => $author->getOrcid(),
 				'country' => $author->getCountry(),
+				'status' => $author->getStatus(),
 				'biography' => $author->getBiography(null), // Localized
 			);
 		} else {
@@ -164,6 +166,8 @@ class UserDetailsForm extends UserForm {
 			$countries[$country->getAlpha2()] = $country->getLocalName();
 		}
 		asort($countries);
+		$statusDAO = DAORegistry::getDAO('StatusDAO');
+		$statuses = $statusDAO->getAllForSelectOptions();
 		$templateMgr = TemplateManager::getManager($request);
 
 		$templateMgr->assign(array(
@@ -173,6 +177,7 @@ class UserDetailsForm extends UserForm {
 			'sitePrimaryLocale' => $site->getPrimaryLocale(),
 			'availableLocales' => $site->getSupportedLocaleNames(),
 			'countries' => $countries,
+			'statuses' => $statuses,
 		));
 
 		if (isset($this->user)) {
@@ -215,6 +220,7 @@ class UserDetailsForm extends UserForm {
 			'orcid',
 			'mailingAddress',
 			'country',
+			'status',
 			'biography',
 			'gossip',
 			'interests',
@@ -264,6 +270,7 @@ class UserDetailsForm extends UserForm {
 		$this->user->setOrcid($this->getData('orcid'));
 		$this->user->setMailingAddress($this->getData('mailingAddress'));
 		$this->user->setCountry($this->getData('country'));
+		$this->user->setStatus($this->getData('status'));
 		$this->user->setBiography($this->getData('biography'), null); // Localized
 		$this->user->setMustChangePassword($this->getData('mustChangePassword') ? 1 : 0);
 		$this->user->setAuthId((int) $this->getData('authId'));

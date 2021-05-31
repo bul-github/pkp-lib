@@ -539,6 +539,7 @@ abstract class PKPApplication implements iPKPApplicationInfoProvider {
 			'ViewsDAO' => 'lib.pkp.classes.views.ViewsDAO',
 			'WorkflowStageDAO' => 'lib.pkp.classes.workflow.WorkflowStageDAO',
 			'XMLDAO' => 'lib.pkp.classes.db.XMLDAO',
+			'StatusDAO' => 'lib.pkp.classes.user.StatusDAO',
 		);
 	}
 

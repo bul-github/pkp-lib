@@ -124,9 +124,12 @@ class RegistrationForm extends Form {
 	 * @copydoc Form::initData()
 	 */
 	function initData() {
+		$statusDAO = DAORegistry::getDAO('StatusDAO');
+		$statuses = $statusDAO->getAllForSelectOptions();
 		$this->_data = array(
 			'userLocales' => array(),
 			'userGroupIds' => array(),
+			'statuses' => $statuses,
 		);
 	}
 
@@ -150,6 +153,7 @@ class RegistrationForm extends Form {
 			'privacyConsent',
 			'readerGroup',
 			'reviewerGroup',
+			'status',
 		));
 
 		if ($this->captchaEnabled) {

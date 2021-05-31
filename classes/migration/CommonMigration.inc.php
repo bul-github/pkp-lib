@@ -88,6 +88,7 @@ class CommonMigration extends Migration {
 			$table->smallInteger('disabled')->default(0);
 			$table->text('disabled_reason')->nullable();
 			$table->smallInteger('inline_help')->nullable();
+			$table->smallInteger('status_id')->nullable();
 			$table->unique(['username'], 'users_username');
 			$table->unique(['email'], 'users_email');
 		});
@@ -239,6 +240,13 @@ class CommonMigration extends Migration {
 			$table->unique(['plugin_name', 'context_id', 'setting_name'], 'plugin_settings_pkey');
 		});
 
+		// User statuses.
+		Capsule::schema()->create('statuses', function (Blueprint $table) {
+			$table->smallInteger('status_id')->autoIncrement();
+			$table->string('locale_key', 100);
+			$table->smallInteger('seq');
+		});
+
 	}
 
 	/**
@@ -264,5 +272,6 @@ class CommonMigration extends Migration {
 		Capsule::schema()->drop('site_settings');
 		Capsule::schema()->drop('site');
 		Capsule::schema()->drop('versions');
+		Capsule::schema()->drop('statuses');
 	}
 }

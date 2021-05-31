@@ -447,3 +447,15 @@ msgstr "Avant de générer une clé API, l'administrateur-trice du site doit dé
 
 msgid "user.privacyLink"
 msgstr "Vos données sont stockées conformément à notre <a href=\"{$privacyUrl}\" target=\"_blank\">déclaration de confidentialité</a>."
+
+msgid "user.status"
+msgstr "Statut"
+
+msgid "user.status.student"
+msgstr "Étudiant"
+
+msgid "user.status.professor"
+msgstr "Professeur"
+
+msgid "user.status.other"
+msgstr "Autre"

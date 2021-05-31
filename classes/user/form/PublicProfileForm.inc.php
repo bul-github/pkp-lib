@@ -40,10 +40,14 @@ class PublicProfileForm extends BaseProfileForm {
 	function initData() {
 		$user = $this->getUser();
 
+		$statusDAO = DAORegistry::getDAO('StatusDAO');
+		$statuses = $statusDAO->getAllForSelectOptions();
 		$this->_data = array(
 			'orcid' => $user->getOrcid(),
 			'userUrl' => $user->getUrl(),
 			'biography' => $user->getBiography(null), // Localized
+			'statuses' => $statuses,
+			'status' => $user->getStatus(),
 		);
 
 		parent::initData();
@@ -56,7 +60,7 @@ class PublicProfileForm extends BaseProfileForm {
 		parent::readInputData();
 
 		$this->readUserVars(array(
-			'orcid', 'userUrl', 'biography',
+			'orcid', 'userUrl', 'biography', 'status',
 		));
 	}
 
@@ -139,6 +143,7 @@ class PublicProfileForm extends BaseProfileForm {
 		$user->setOrcid($this->getData('orcid'));
 		$user->setUrl($this->getData('userUrl'));
 		$user->setBiography($this->getData('biography'), null); // Localized
+		$user->setStatus($this->getData('status'));
 
 		parent::execute(...$functionArgs);
 	}

@@ -97,6 +97,10 @@
 		{fbvElement type="select" label="common.country" name="country" id="country" required=$countryRequired defaultLabel="" defaultValue="" from=$countries selected=$country translate="0" size=$fbvStyles.size.MEDIUM}
 	{/fbvFormSection}
 
+	{fbvFormSection for="status" title="user.status"}
+		{fbvElement type="select" label="user.status" name="status" id="status" defaultLabel="" defaultValue="" from=$statuses selected=$status translate=true size=$fbvStyles.size.MEDIUM}
+	{/fbvFormSection}
+
 	{if !$disableSendNotifySection}
 		{fbvFormSection title="grid.user.notifyUser" for="sendNotify" list=true}
 			{if $sendNotify}

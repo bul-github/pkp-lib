@@ -64,6 +64,9 @@
 	{fbvFormSection}
 		{fbvElement type="text" label="user.orcid" name="orcid" id="orcid" value=$orcid maxlength="37"}
 	{/fbvFormSection}
+	{fbvFormSection}
+		{fbvElement type="select" label="user.status" name="status" id="status" defaultLabel="" defaultValue="" from=$statuses selected=$status size=$fbvStyles.size.SMALL}
+	{/fbvFormSection}
 
 	{call_hook name="User::PublicProfile::AdditionalItems"}
 

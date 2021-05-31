@@ -67,6 +67,17 @@
 				</select>
 			</label>
 		</div>
+		<div class="status">
+			<label>
+				<span class="label">
+					{translate key="user.status"}
+				</span>
+				<select name="status" id="status">
+					<option></option>
+					{html_options_translate options=$statuses}
+				</select>
+			</label>
+		</div>
 	</div>
 </fieldset>
 

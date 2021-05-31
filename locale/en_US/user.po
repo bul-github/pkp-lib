@@ -439,3 +439,15 @@ msgstr "Before generating an API key, your site administrator must set a secret 
 
 msgid "user.privacyLink"
 msgstr "Your data is stored in accordance with our <a href=\"{$privacyUrl}\" target=\"_blank\">privacy statement</a>."
+
+msgid "user.status"
+msgstr "Status"
+
+msgid "user.status.student"
+msgstr "Student"
+
+msgid "user.status.professor"
+msgstr "Professor"
+
+msgid "user.status.other"
+msgstr "Other"

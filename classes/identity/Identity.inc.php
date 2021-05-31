@@ -310,6 +310,21 @@ class Identity extends DataObject {
 		$this->setData('biography', $biography, $locale);
 	}
 
+	/**
+	 * Get status.
+	 * @return string
+	 */
+	function getStatus() {
+		return $this->getData('status');
+	}
+
+	/**
+	 * Set status.
+	 * @param $status string
+	 */
+	function setStatus($status) {
+		$this->setData('status', $status);
+	}
 }
 
 

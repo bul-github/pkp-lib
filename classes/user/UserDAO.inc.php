@@ -272,6 +272,7 @@ class UserDAO extends DAO {
 		$user->setAuthId($row['auth_id']);
 		$user->setAuthStr($row['auth_str']);
 		$user->setInlineHelp($row['inline_help']);
+		$user->setStatus($row['status_id']);
 		$user->setGossip($row['gossip']);
 
 		if ($callHook) HookRegistry::call('UserDAO::_returnUserFromRow', array(&$user, &$row));
@@ -292,9 +293,9 @@ class UserDAO extends DAO {
 		}
 		$this->update(
 			sprintf('INSERT INTO users
-				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, gossip)
+				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, status_id, gossip)
 				VALUES
-				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?)',
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?, ?)',
 				$this->datetimeToDB($user->getDateLastEmail()), $this->datetimeToDB($user->getDateRegistered()), $this->datetimeToDB($user->getDateValidated()), $this->datetimeToDB($user->getDateLastLogin())),
 			[
 				$user->getUsername(),
@@ -312,6 +313,7 @@ class UserDAO extends DAO {
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
 				(int) $user->getInlineHelp(),
+				(int) $user->getStatus(),
 				$user->getGossip(),
 			]
 		);
@@ -385,6 +387,7 @@ class UserDAO extends DAO {
 					auth_id = ?,
 					auth_str = ?,
 					inline_help = ?,
+					status_id = ?,
 					gossip = ?
 				WHERE	user_id = ?',
 				$this->datetimeToDB($user->getDateLastEmail()), $this->datetimeToDB($user->getDateValidated()), $this->datetimeToDB($user->getDateLastLogin())),
@@ -404,6 +407,7 @@ class UserDAO extends DAO {
 				$user->getAuthId()=='' ? null : (int) $user->getAuthId(),
 				$user->getAuthStr(),
 				(int) $user->getInlineHelp(),
+				(int) $user->getStatus(),
 				$user->getGossip(),
 				(int) $user->getId(),
 			]
