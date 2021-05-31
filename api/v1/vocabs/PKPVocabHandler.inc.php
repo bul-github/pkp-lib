@@ -92,7 +92,7 @@ class PKPVocabHandler extends APIHandler {
 				$entries = $submissionDisciplineEntryDao->getByContextId($vocab, $context->getId(), $locale)->toArray();
 				break;
 			case CONTROLLED_VOCAB_SUBMISSION_LANGUAGE:
-				$isoCodes = new \Sokil\IsoCodes\IsoCodesFactory(\Sokil\IsoCodes\IsoCodesFactory::OPTIMISATION_IO);
+				$isoCodes = new \Sokil\IsoCodes\IsoCodesFactory();
 				$languageNames = [];
 				foreach ($isoCodes->getLanguages() as $language) {
 					if (!$language->getAlpha2() || $language->getType() != 'L' || $language->getScope() != 'I') continue;
