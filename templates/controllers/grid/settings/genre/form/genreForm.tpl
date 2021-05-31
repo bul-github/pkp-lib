@@ -33,6 +33,7 @@
 {fbvFormSection label="manager.setup.genres.key" description="manager.setup.genres.key.description" for="key"}
 	{fbvElement type="text" id="key" value=$key maxlength="30" readonly=$keyReadOnly size=$fbvStyles.size.SMALL}
 {/fbvFormSection}
+{call_hook name="Templates::Controllers::Grid::Settings::Genre::Form::genreForm"}
 {/fbvFormArea}
 
 {if $gridId}

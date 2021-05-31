@@ -147,6 +147,7 @@ class GenreForm extends Form {
 		} else {
 			$genreDao->updateObject($genre);
 		}
+		HookRegistry::call('GenreForm::execute', array($request->_requestVars));
 		parent::execute(...$functionArgs);
 		return true;
 	}
