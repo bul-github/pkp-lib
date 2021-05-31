@@ -330,6 +330,7 @@ class AdminHandler extends Handler {
 		$versionDao = DAORegistry::getDAO('VersionDAO'); /* @var $versionDao VersionDAO */
 		$currentVersion = $versionDao->getCurrentVersion();
 
+		$latestVersionInfo = null;
 		if ($request->getUserVar('versionCheck')) {
 			$latestVersionInfo = VersionCheck::getLatestVersion();
 			$latestVersionInfo['patch'] = VersionCheck::getPatch($latestVersionInfo);
