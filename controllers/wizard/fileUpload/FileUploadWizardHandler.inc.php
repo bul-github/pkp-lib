@@ -353,6 +353,21 @@ class FileUploadWizardHandler extends Handler {
 	 * @return JSONMessage JSON object
 	 */
 	function uploadFile($args, $request) {
+		$genreId = $args['genreId'];
+		HookRegistry::call('FileUploadWizardHandler::uploadFile', array('uploadedFile', &$errors, $genreId));
+		if ($errors) {
+			$messages = $errors->getMessages();
+			if ($messages) {
+				$clamAVError = isset($messages['clamAV']) ? $messages['clamAV'][0] : null;
+				if ($clamAVError) {
+					return new JSONMessage(false, $clamAVError);
+				}
+				$fileFormatError = isset($messages['fileFormat']) ? $messages['fileFormat'][0] : null;
+				if ($fileFormatError) {
+					return new JSONMessage(false, $fileFormatError);
+				}
+			}
+		}
 		// Instantiate the file upload form.
 		$submission = $this->getSubmission();
 		import('lib.pkp.controllers.wizard.fileUpload.form.SubmissionFilesUploadForm');

@@ -134,6 +134,13 @@ class FileManager {
 	 * @return boolean returns true if successful
 	 */
 	function uploadFile($fileName, $destFileName) {
+		HookRegistry::call('FileManager::uploadFile', array(&$fileName, &$errors));
+		if ($errors) {
+			$request = Application::get()->getRequest();
+			$session =& $request->getSession();
+			$session->setSessionVar('clamAV', $errors);
+			return false;
+		}
 		$destDir = dirname($destFileName);
 		if (!$this->fileExists($destDir, 'dir')) {
 			// Try to create the destination directory

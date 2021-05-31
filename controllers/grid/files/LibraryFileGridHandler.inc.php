@@ -300,7 +300,20 @@ class LibraryFileGridHandler extends CategoryGridHandler {
 			));
 			return $json;
 		} else {
-			return new JSONMessage(false, __('common.uploadFailed'));
+			$session = $request->getSession();
+			$errors = $session->getSessionVar('clamAV');
+			if ($errors) {
+				$messages = $errors->getMessages();
+				if ($messages) {
+					$clamAVError = isset($messages['clamAV']) ? $messages['clamAV'][0] : null;
+					if ($clamAVError) {
+						return new JSONMessage(false, $clamAVError);
+					}
+				}
+			}
+			else {
+				return new JSONMessage(false, __('common.uploadFailed'));
+			}
 		}
 	}
 
