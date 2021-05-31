@@ -88,6 +88,7 @@ class CommonMigration extends Migration {
 			$table->smallInteger('disabled')->default(0);
 			$table->text('disabled_reason')->nullable();
 			$table->smallInteger('inline_help')->nullable();
+			$table->string('ldap', 32)->nullable();
 			$table->smallInteger('status_id')->nullable();
 			$table->unique(['username'], 'users_username');
 			$table->unique(['email'], 'users_email');
