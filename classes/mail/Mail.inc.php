@@ -466,6 +466,11 @@ class Mail extends DataObject {
 	 * @return boolean
 	 */
 	function send() {
+		$allowSendEmail = Config::getVar('email', 'allow_send_email');
+		if (!$allowSendEmail) {
+			return false;
+		}
+
 		if (HookRegistry::call('Mail::send', array($this))) return true;
 
 		// Replace all the private parameters for this message.
@@ -507,8 +512,9 @@ class Mail extends DataObject {
 			}
 			$mailer->AuthType = Config::getVar('email', 'smtp_authtype', '');
 			if (Config::getVar('debug', 'show_stacktrace')) {
+				$hideEmailStacktrace = Config::getVar('debug', 'hide_email_stacktrace');
 				// debug level 3 represents client and server interaction, plus initial connection debugging
-				$mailer->SMTPDebug = 3;
+				$mailer->SMTPDebug = $hideEmailStacktrace ? false : 3;
 				$mailer->Debugoutput = 'error_log';
 			}
 			if (Config::getVar('email', 'smtp_suppress_cert_check')) {
