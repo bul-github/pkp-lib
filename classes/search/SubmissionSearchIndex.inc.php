@@ -37,9 +37,11 @@ abstract class SubmissionSearchIndex {
 		if (is_array($text)) $text = join("\n", $text);
 
 		// Remove punctuation
-		$text = PKPString::regexp_replace('/[!"\#\$%\'\(\)\.\?@\[\]\^`\{\}~]/', '', $text);
-		$text = PKPString::regexp_replace('/[\+,:;&\/<=>\|\\\]/', ' ', $text);
-		$text = PKPString::regexp_replace('/[\*]/', $allowWildcards ? '%' : ' ', $text);
+		$pcre_utf8 = 'U';
+		$limit = -1;
+		preg_replace('/[!"\#\$%\'\(\)\.\?@\[\]\^`\{\}~]/' . $pcre_utf8, '', $text, $limit);
+		preg_replace('/[\+,:;&\/<=>\|\\\]/' . $pcre_utf8, ' ', $text, $limit);
+		preg_replace('/[\*]/' . $pcre_utf8, $allowWildcards ? '%' : ' ', $text, $limit);
 		$text = PKPString::strtolower($text);
 
 		// Split into words
