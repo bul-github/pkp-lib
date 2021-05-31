@@ -24,7 +24,14 @@ class Validation {
 	 * @return User the User associated with the login credentials, or false if the credentials are invalid
 	 */
 	static function login($username, $password, &$reason, $remember = false) {
+		// Instantiate the DAO to register the auth plugins.
+		$authDao = DAORegistry::getDAO('AuthSourceDAO'); /* @var $authDao AuthSourceDAO */
 		$reason = null;
+		$user = null;
+		if (HookRegistry::call('Validation::login', array($username, $password, &$user, &$reason))) {
+			// We automatically log in the user when LDAP or another distant login method is valid.
+			return self::registerUserSession($user, $reason, $remember);
+		}
 		$userDao = DAORegistry::getDAO('UserDAO'); /* @var $userDao UserDAO */
 		$user = $userDao->getByUsername($username, true);
 		if (!isset($user)) {
@@ -33,7 +40,6 @@ class Validation {
 		}
 
 		if ($user->getAuthId()) {
-			$authDao = DAORegistry::getDAO('AuthSourceDAO'); /* @var $authDao AuthSourceDAO */
 			$auth = $authDao->getPlugin($user->getAuthId());
 		} else {
 			$auth = null;
