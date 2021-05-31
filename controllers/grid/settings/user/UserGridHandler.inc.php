@@ -121,6 +121,17 @@ class UserGridHandler extends GridHandler {
 			)
 		);
 
+		// Roles.
+		$this->addColumn(
+			new GridColumn(
+				'roles',
+				'user.roles',
+				null,
+				null,
+				$cellProvider
+			)
+		);
+
 		// Email.
 		$this->addColumn(
 			new GridColumn(
@@ -166,14 +177,29 @@ class UserGridHandler extends GridHandler {
 		$userGroupDao = DAORegistry::getDAO('UserGroupDAO'); /* @var $userGroupDao UserGroupDAO */
 		$rangeInfo = $this->getGridRangeInfo($request, $this->getId());
 
-		return $userGroupDao->getUsersById(
+		$contextId = $context->getId();
+
+		$users = $userGroupDao->getUsersById(
 			$filter['userGroup'],
-			$filter['includeNoRole']?null:$context->getId(),
+			$filter['includeNoRole']?null:$contextId,
 			$filter['searchField'],
 			$filter['search']?$filter['search']:null,
 			$filter['searchMatch'],
 			$rangeInfo
-		);
+		)->toAssociativeArray();
+
+		foreach (array_values($users) as $value) {
+			$userGroups = $userGroupDao->getByUserId($value->getId(), $contextId);
+			$roles = array();
+
+			while ($userGroup = $userGroups->next()) {
+				array_push($roles, $userGroup->getLocalizedName());
+			}
+
+			$value->setData('roles', join(', ', $roles));
+		}
+
+		return $users;
 	}
 
 	/**
