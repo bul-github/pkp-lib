@@ -294,7 +294,8 @@ class UserDetailsForm extends UserForm {
 
 		if ($this->user->getAuthId()) {
 			$authDao = DAORegistry::getDAO('AuthSourceDAO'); /* @var $authDao AuthSourceDAO */
-			$auth =& $authDao->getPlugin($this->user->getAuthId());
+			$authPlugin = $authDao->getPlugin($this->user->getAuthId());
+			$auth =& $authPlugin;
 		}
 
 		parent::execute(...$functionParams);
