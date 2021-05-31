@@ -1997,3 +1997,24 @@ msgstr "Modifier {$name}"
 
 msgid "common.inactive"
 msgstr "Inactif-ve"
+
+msgid "reviewer.submission.reviewRound.info.history"
+msgstr "Historique d'évaluation"
+
+msgid "reviewer.submission.comments.review"
+msgstr "Évaluation"
+
+msgid "reviewer.submission.comments.authorAndEditor"
+msgstr "Pour l'auteur et la rédaction"
+
+msgid "reviewer.submission.comments.editorOnly"
+msgstr "Pour la rédaction seulement"
+
+msgid "reviewer.submission.reviewDeclineDate"
+msgstr "Date de refus"
+
+msgid "reviewer.submission.emailLog"
+msgstr "Courriel de refus envoyé"
+
+msgid "reviewer.submission.emailLog.defaultMessage"
+msgstr "Vous aviez décliné notre invitation à évaluer lors de ce cycle."

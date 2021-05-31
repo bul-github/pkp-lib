@@ -154,7 +154,8 @@ abstract class PKPWorkflowHandler extends Handler {
 			$canAccessEditorialHistory = true;
 
 		} elseif (!empty($accessibleWorkflowStages[$currentStageId]) && array_intersect($editorialWorkflowRoles, $accessibleWorkflowStages[$currentStageId])) {
-			$canAccessProduction = (bool) array_intersect($editorialWorkflowRoles, $accessibleWorkflowStages[WORKFLOW_STAGE_ID_PRODUCTION]);
+			$accessibleWorkflowStageProduction = $accessibleWorkflowStages[WORKFLOW_STAGE_ID_PRODUCTION] ?? null;
+			$canAccessProduction = (bool) array_intersect($editorialWorkflowRoles, $accessibleWorkflowStageProduction);
 			$canAccessPublication = true;
 
 			$stageAssignmentDao = DAORegistry::getDAO('StageAssignmentDAO'); /* @var $stageAssignmentDao StageAssignmentDAO */
@@ -167,7 +168,7 @@ abstract class PKPWorkflowHandler extends Handler {
 			// If they have no stage assignments, check the role they have been granted
 			// for the production workflow stage. An unassigned admin or manager may
 			// have been granted access and should be allowed to publish.
-			if (empty($result) && is_array($accessibleWorkflowStages[WORKFLOW_STAGE_ID_PRODUCTION])) {
+			if (empty($result) && is_array($accessibleWorkflowStageProduction)) {
 				$canPublish = (bool) array_intersect([ROLE_ID_SITE_ADMIN, ROLE_ID_MANAGER], $accessibleWorkflowStages[WORKFLOW_STAGE_ID_PRODUCTION]);
 
 			// Otherwise, check stage assignments

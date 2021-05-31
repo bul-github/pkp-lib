@@ -27,6 +27,10 @@
 		{rdelim});
 	</script>
 
+	{if $lastReviewRoundNumber > 1 && $reviewRounds|@count > 0}
+		{include file="reviewer/review/reviewRoundTab.tpl" reviewRounds=$reviewRounds reviewRoundTabsId="externalReviewRoundTabs" lastReviewRoundNumber=$lastReviewRoundNumber}
+	{/if}
+
 	<div id="reviewTabs" class="pkp_controllers_tab">
 		<ul>
 			<li><a href="{url op="step" path=$submission->getId() step=1}">{translate key="reviewer.reviewSteps.request"}</a></li>

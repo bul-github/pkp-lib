@@ -111,3 +111,9 @@ msgstr "L'utilisateur-trice actuel-elle n'est pas assigné-e en tant qu'évaluat
 
 msgid "reviewer.submission.saveReviewForLater"
 msgstr "Sauvegarder pour plus tard"
+
+msgid "reviewer.submission.reviewRound.info"
+msgstr "Consulter mes évaluations précédentes : "
+
+msgid "reviewer.submission.reviewRound.info.modal.title"
+msgstr "Évaluation cycle {$reviewRoundNumber} : {$submissionTitle}"

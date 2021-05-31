@@ -1963,3 +1963,24 @@ msgstr "The {$attribute} has already been taken."
 
 msgid "validator.url"
 msgstr "This is not a valid URL."
+
+msgid "reviewer.submission.reviewRound.info.history"
+msgstr "Review history"
+
+msgid "reviewer.submission.comments.review"
+msgstr "Review"
+
+msgid "reviewer.submission.comments.authorAndEditor"
+msgstr "Author and editor"
+
+msgid "reviewer.submission.comments.editorOnly"
+msgstr "Editor only"
+
+msgid "reviewer.submission.reviewDeclineDate"
+msgstr "Declined Date"
+
+msgid "reviewer.submission.emailLog"
+msgstr "Decline reason sent by email"
+
+msgid "reviewer.submission.emailLog.defaultMessage"
+msgstr "You declined our invitation to this review round."

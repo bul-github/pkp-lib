@@ -112,3 +112,9 @@ msgstr "Send to Reviewers"
 
 msgid "user.authorization.submissionReviewer"
 msgstr "The current user is not assigned as a reviewer for the requested document."
+
+msgid "reviewer.submission.reviewRound.info"
+msgstr "Read my former reviews: "
+
+msgid "reviewer.submission.reviewRound.info.modal.title"
+msgstr "Evaluation cycle {$reviewRoundNumber} : {$submissionTitle}"

@@ -16,6 +16,7 @@
 import('classes.handler.Handler');
 import('lib.pkp.classes.core.JSONMessage');
 import('lib.pkp.classes.submission.reviewer.ReviewerAction');
+import('lib.pkp.controllers.review.linkAction.ReviewRoundModalLinkAction');
 
 class PKPReviewerHandler extends Handler {
 
@@ -33,6 +34,21 @@ class PKPReviewerHandler extends Handler {
 		$reviewerSubmission = $reviewerSubmissionDao->getReviewerSubmission($reviewAssignment->getId());
 		assert(is_a($reviewerSubmission, 'ReviewerSubmission'));
 
+		$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
+		$reviewerUserGroups = $userGroupDao->getDefaultByRoleId($request->getContext()->getId(), ROLE_ID_REVIEWER);
+
+		$stageAssignmentDao = DAORegistry::getDAO('StageAssignmentDAO');
+		$result = $stageAssignmentDao->getBySubmissionAndStageId($reviewerSubmission->getId(), null, $reviewerUserGroups->getId(), $request->getUser()->getId());
+		$resultArray = $result->toArray();
+		$isEmpty = count($resultArray) === 0;
+		if ($isEmpty) {
+			$stageAssignment = $stageAssignmentDao->newDataObject();
+			$stageAssignment->setSubmissionId($reviewerSubmission->getId());
+			$stageAssignment->setUserId($request->getUser()->getId());
+			$stageAssignment->setUserGroupId($reviewerUserGroups->getId());
+			$stageAssignmentDao->insertObject($stageAssignment);
+		}
+
 		$this->setupTemplate($request);
 
 		$templateMgr = TemplateManager::getManager($request);
@@ -41,10 +57,33 @@ class PKPReviewerHandler extends Handler {
 		$step = (int) (!empty($userStep) ? $userStep: $reviewStep);
 		if ($step > $reviewStep) $step = $reviewStep; // Reviewer can't go past incomplete steps
 		if ($step < 1 || $step > 4) throw new Exception('Invalid step!');
+		$reviewRoundDao = DAORegistry::getDAO('ReviewRoundDAO');
+		$reviewRounds = $reviewRoundDao->getBySubmissionId($reviewerSubmission->getId())->toArray();
+
+		$reviewRoundsWhereReviewerAssigned = array();
+
+		foreach ($reviewRounds as $reviewRound) {
+			$reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO');
+			$roundAssignment = $reviewAssignmentDao->getReviewAssignment($reviewRound->getId(), $reviewAssignment->getReviewerId());
+			if (!is_null($roundAssignment)) {
+				$reviewRoundsWhereReviewerAssigned[$reviewRound->getRound()] = $reviewRound;
+			}
+		}
+
+		$lastReviewRound = $reviewRoundDao->getLastReviewRoundBySubmissionId($reviewerSubmission->getId());
+
+		$reviewRoundActions = array();
+		foreach ($reviewRoundsWhereReviewerAssigned as $reviewRound) {
+			$reviewRoundActions[$reviewRound->getRound() - 1] = new ReviewRoundModalLinkAction($request, $reviewerSubmission->getId(), $reviewRound->getId(), $reviewRound->getRound());
+		}
+
 		$templateMgr->assign([
 			'pageTitle' => __('semicolon', ['label' => __('submission.review')]) . $reviewerSubmission->getLocalizedTitle(),
 			'reviewStep' => $reviewStep,
 			'selected' => $step - 1,
+			'reviewRounds' => $reviewRounds,
+			'reviewRoundActions' => $reviewRoundActions,
+			'lastReviewRoundNumber' => $lastReviewRound->getRound(),
 			'submission' => $reviewerSubmission,
 		]);
 
@@ -65,6 +104,21 @@ class PKPReviewerHandler extends Handler {
 		$reviewerSubmissionDao = DAORegistry::getDAO('ReviewerSubmissionDAO'); /* @var $reviewerSubmissionDao ReviewerSubmissionDAO */
 		$reviewerSubmission = $reviewerSubmissionDao->getReviewerSubmission($reviewAssignment->getId());
 		assert(is_a($reviewerSubmission, 'ReviewerSubmission'));
+
+		$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
+		$reviewerUserGroups = $userGroupDao->getDefaultByRoleId($request->getContext()->getId(), ROLE_ID_REVIEWER);
+
+		$stageAssignmentDao = DAORegistry::getDAO('StageAssignmentDAO');
+		$result = $stageAssignmentDao->getBySubmissionAndStageId($reviewerSubmission->getId(), null, $reviewerUserGroups->getId(), $request->getUser()->getId());
+		$resultArray = $result->toArray();
+		$isEmpty = count($resultArray) === 0;
+		if ($isEmpty) {
+			$stageAssignment = $stageAssignmentDao->newDataObject();
+			$stageAssignment->setSubmissionId($reviewerSubmission->getId());
+			$stageAssignment->setUserId($request->getUser()->getId());
+			$stageAssignment->setUserGroupId($reviewerUserGroups->getId());
+			$stageAssignmentDao->insertObject($stageAssignment);
+		}
 
 		$this->setupTemplate($request);
 
@@ -115,7 +169,7 @@ class PKPReviewerHandler extends Handler {
 			$notificationMgr = new NotificationManager();
 			$user = $request->getUser();
 			$notificationMgr->createTrivialNotification($user->getId(), NOTIFICATION_TYPE_SUCCESS, array('contents' => __('common.changesSaved')));
-			return DAO::getDataChangedEvent();			
+			return DAO::getDataChangedEvent();
 		}
 		// Submit the form data and move forward
 		else {
@@ -204,12 +258,12 @@ class PKPReviewerHandler extends Handler {
 	public function getReviewForm($step, $request, $reviewerSubmission, $reviewAssignment) {
 	    switch ($step) {
 	        case 1:
-	        	import("lib.pkp.classes.submission.reviewer.form.PKPReviewerReviewStep1Form"); 
+	        	import("lib.pkp.classes.submission.reviewer.form.PKPReviewerReviewStep1Form");
 	        	return new PKPReviewerReviewStep1Form($request, $reviewerSubmission, $reviewAssignment);
-	        case 2: 
+	        case 2:
 	        	import("lib.pkp.classes.submission.reviewer.form.PKPReviewerReviewStep2Form");
 	        	return new PKPReviewerReviewStep2Form($request, $reviewerSubmission, $reviewAssignment);
-	        case 3: 
+	        case 3:
 	        	import("lib.pkp.classes.submission.reviewer.form.PKPReviewerReviewStep3Form");
 	        	return new PKPReviewerReviewStep3Form($request, $reviewerSubmission, $reviewAssignment);
 	    }

@@ -48,6 +48,34 @@ class SubmissionEmailLogDAO extends EmailLogDAO {
 	function getBySubmissionId($submissionId) {
 		return $this->getByAssoc(ASSOC_TYPE_SUBMISSION, $submissionId);
 	}
+
+	/**
+	 * Get submission email log entries by submission ID, event type and sender ID
+	 * @param $submissionId int
+	 * @param $eventType SUBMISSION_EMAIL_...
+	 * @param $senderId int Return only emails sent by this user.
+	 * @return DAOResultFactory
+	 */
+	function getBySenderId($submissionId, $eventType, $senderId) {
+		$params = array(
+			ASSOC_TYPE_SUBMISSION,
+			(int) $submissionId,
+			(int) $eventType,
+			(int) $senderId
+		);
+
+		$result = $this->retrieveRange(
+			'SELECT	e.*
+			FROM email_log e
+			WHERE e.assoc_type = ? AND
+				e.assoc_id = ? AND
+				e.event_type = ? AND
+				e.sender_id = ?',
+			$params
+		);
+
+		return new DAOResultFactory($result, $this, 'build');
+	}
 }
 
 
