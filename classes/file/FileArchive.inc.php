@@ -26,7 +26,7 @@ class FileArchive {
 	 */
 	function create($files, $filesDir) {
 		// Create a temporary file.
-		$archivePath = tempnam('/tmp', 'sf-');
+		$archivePath = tempnam($filesDir . '/temp', 'sf-');
 
 		// attempt to use Zip first, if it is available.  Otherwise
 		// fall back to the tar CLI.
