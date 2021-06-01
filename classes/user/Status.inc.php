@@ -1,8 +1,4 @@
 <?php
-/**
- * @defgroup user User
- * Implements data objects and DAOs concerned with managing user accounts.
- */
 
 /**
  * @file classes/user/Status.inc.php
@@ -18,8 +14,6 @@
  *
  * @brief Basic class describing user statuses existing in the system.
  */
-
-import('lib.pkp.classes.identity.Identity');
 
 class Status extends DataObject {
 	/**
