@@ -243,6 +243,45 @@ class UserDAO extends DAO {
 	}
 
 	/**
+	 * Retrieves the private note content for the specific user.
+	 * @param $user User
+	 */
+	function fetchPrivateNoteData($user) {
+		$context = Application::getRequest()->getContext();
+
+		if (!$context) {
+			return;
+		}
+
+		$contextId = $context->getId();
+		$userId = $user->getId();
+
+		$privateNotesDAO = DAORegistry::getDAO('PrivateNotesDAO');
+		$privateNote = $privateNotesDAO->getNote($contextId, $userId);
+
+		$user->setGossip($privateNote);
+	}
+
+	/**
+	 * Updates the private note content for the specific user.
+	 * @param $user User
+	 */
+	function updatePrivateNoteData($user) {
+		$context = Application::getRequest()->getContext();
+
+		if (!$context) {
+			return;
+		}
+
+		$contextId = $context->getId();
+		$userId = $user->getId();
+		$privateNote = $user->getGossip();
+
+		$privateNotesDAO = DAORegistry::getDAO('PrivateNotesDAO');
+		$privateNotesDAO->setNote($contextId, $userId, $privateNote);
+	}
+
+	/**
 	 * Create and return a complete User object from a given row.
 	 * @param $row array
 	 * @param $callHook boolean
@@ -251,6 +290,7 @@ class UserDAO extends DAO {
 	function _returnUserFromRowWithData($row, $callHook = true) {
 		$user = $this->_returnUserFromRow($row, false);
 		$this->getDataObjectSettings('user_settings', 'user_id', $row['user_id'], $user);
+		$this->fetchPrivateNoteData($user);
 
 		if (isset($row['review_id'])) $user->review_id = $row['review_id'];
 		HookRegistry::call('UserDAO::_returnUserFromRowWithData', array(&$user, &$row));
@@ -288,7 +328,6 @@ class UserDAO extends DAO {
 		$user->setInlineHelp($row['inline_help']);
 		$user->setLdap($row['ldap']);
 		$user->setStatus($row['status_id']);
-		$user->setGossip($row['gossip']);
 
 		if ($callHook) HookRegistry::call('UserDAO::_returnUserFromRow', array(&$user, &$row));
 
@@ -308,9 +347,9 @@ class UserDAO extends DAO {
 		}
 		$this->update(
 			sprintf('INSERT INTO users
-				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, ldap, status_id, gossip)
+				(username, password, email, url, phone, mailing_address, billing_address, country, locales, date_last_email, date_registered, date_validated, date_last_login, must_change_password, disabled, disabled_reason, auth_id, auth_str, inline_help, ldap, status_id)
 				VALUES
-				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, ?, ?, ?, ?, ?, ?, ?, ?)',
 				$this->datetimeToDB($user->getDateLastEmail()), $this->datetimeToDB($user->getDateRegistered()), $this->datetimeToDB($user->getDateValidated()), $this->datetimeToDB($user->getDateLastLogin())),
 			[
 				$user->getUsername(),
@@ -330,12 +369,12 @@ class UserDAO extends DAO {
 				(int) $user->getInlineHelp(),
 				$user->getLdap(),
 				(int) $user->getStatus(),
-				$user->getGossip(),
 			]
 		);
 
 		$user->setId($this->getInsertId());
 		$this->updateLocaleFields($user);
+		$this->updatePrivateNoteData($user);
 		return $user->getId();
 	}
 
@@ -382,6 +421,7 @@ class UserDAO extends DAO {
 		}
 
 		$this->updateLocaleFields($user);
+		$this->updatePrivateNoteData($user);
 
 		return $this->update(
 			sprintf('UPDATE	users
@@ -404,8 +444,7 @@ class UserDAO extends DAO {
 					auth_str = ?,
 					inline_help = ?,
 					ldap = ?,
-					status_id = ?,
-					gossip = ?
+					status_id = ?
 				WHERE	user_id = ?',
 				$this->datetimeToDB($user->getDateLastEmail()), $this->datetimeToDB($user->getDateValidated()), $this->datetimeToDB($user->getDateLastLogin())),
 			[
@@ -426,7 +465,6 @@ class UserDAO extends DAO {
 				(int) $user->getInlineHelp(),
 				$user->getLdap(),
 				(int) $user->getStatus(),
-				$user->getGossip(),
 				(int) $user->getId(),
 			]
 		);

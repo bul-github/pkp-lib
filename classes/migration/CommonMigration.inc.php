@@ -248,6 +248,14 @@ class CommonMigration extends Migration {
 			$table->smallInteger('seq');
 		});
 
+		// User private notes.
+		Capsule::schema()->create('private_notes', function (Blueprint $table) {
+			$table->bigInteger('private_note_id')->autoIncrement();
+			$table->bigInteger('context_id');
+			$table->bigInteger('user_id');
+			$table->text('note')->nullable();;
+		});
+
 	}
 
 	/**
@@ -274,5 +282,6 @@ class CommonMigration extends Migration {
 		Capsule::schema()->drop('site');
 		Capsule::schema()->drop('versions');
 		Capsule::schema()->drop('statuses');
+		Capsule::schema()->drop('private_notes');
 	}
 }

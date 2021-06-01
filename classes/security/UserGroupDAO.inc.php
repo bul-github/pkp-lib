@@ -472,7 +472,11 @@ class UserGroupDAO extends DAO {
 			$this->userDao->getFetchParameters(),
 			[IDENTITY_SETTING_GIVENNAME, IDENTITY_SETTING_FAMILYNAME]
 		);
-		if ($contextId) $params[] = (int) $contextId;
+		if ($contextId) {
+			$params[] = (int) $contextId;
+			// Add it twice to search in private notes.
+			$params[] = (int) $contextId;
+		}
 		if ($userGroupId) $params[] = (int) $userGroupId;
 
 
@@ -489,11 +493,11 @@ class UserGroupDAO extends DAO {
 				' . $this->userDao->getFetchJoins() .'
 				LEFT JOIN user_settings usgs ON (usgs.user_id = u.user_id AND usgs.setting_name = ?)
 				LEFT JOIN user_settings usfs ON (usfs.user_id = u.user_id AND usfs.setting_name = ?)
-
+				' . ($contextId ? 'LEFT JOIN private_notes pn ON (pn.user_id = u.user_id AND pn.context_id = ?)' : '') . '
 			WHERE	1=1 ' .
 				($contextId?'AND ug.context_id = ? ':'') .
 				($userGroupId?'AND ug.user_group_id = ? ':'') .
-				$this->_getSearchSql($searchType, $search, $searchMatch, $params),
+				$this->_getSearchSql($searchType, $search, $searchMatch, $params, $contextId),
 			$params,
 			$dbResultRange
 		);
@@ -777,7 +781,7 @@ class UserGroupDAO extends DAO {
 	 * @param array $params SQL parameter array reference
 	 * @return string SQL search snippet
 	 */
-	function _getSearchSql($searchType, $search, $searchMatch, &$params) {
+	function _getSearchSql($searchType, $search, $searchMatch, &$params, $contextId) {
 		$searchTypeMap = [
 			IDENTITY_SETTING_GIVENNAME => 'usgs.setting_value',
 			IDENTITY_SETTING_FAMILYNAME => 'usfs.setting_value',
@@ -792,7 +796,7 @@ class UserGroupDAO extends DAO {
 
 			if (!isset($searchTypeMap[$searchType])) {
 				$str = $this->concat('COALESCE(usgs.setting_value,\'\')', 'COALESCE(usfs.setting_value,\'\')', 'u.email', 'COALESCE(us.setting_value,\'\')');
-				$concatFields = ' ( LOWER(' . $str . ') LIKE ? OR LOWER(cves.setting_value) LIKE ? ) ';
+				$concatFields = ' ( LOWER(' . $str . ') LIKE ? OR LOWER(cves.setting_value) LIKE ? ' . ($contextId ? 'OR LOWER(pn.note) LIKE ?' : '') . ')';
 
 				$search = strtolower($search);
 
@@ -803,6 +807,10 @@ class UserGroupDAO extends DAO {
 					$searchFieldMap[] = $concatFields;
 					$term = '%' . $word . '%';
 					array_push($params, $term, $term);
+					// Add another parameter to search in private notes.
+					if ($contextId) {
+						array_push($params, $term);
+					}
 				}
 
 				$searchSql .= ' AND (  ' . join(' AND ', $searchFieldMap) . '  ) ';

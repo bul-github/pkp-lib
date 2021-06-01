@@ -555,6 +555,9 @@ class PKPUserQueryBuilder implements EntityQueryBuilderInterface {
 				$q->leftJoin('user_settings as us', 'u.user_id', '=', 'us.user_id');
 				$q->leftJoin('user_interests as ui', 'u.user_id', '=', 'ui.user_id');
 				$q->leftJoin('controlled_vocab_entry_settings as cves', 'ui.controlled_vocab_entry_id', '=', 'cves.controlled_vocab_entry_id');
+				$q->leftJoin('private_notes as pn', function ($join) {
+					$join->on('u.user_id', '=', 'pn.user_id')->where('pn.context_id', '=', $this->contextId);
+				});
 				foreach ($words as $word) {
 					$word = strtolower(addcslashes($word, '%_'));
 					$q->where(function($q) use ($word) {
@@ -580,7 +583,8 @@ class PKPUserQueryBuilder implements EntityQueryBuilderInterface {
 								$q->where('us.setting_name', 'orcid');
 								$q->where(Capsule::raw('lower(us.setting_value)'), 'LIKE', "%{$word}%");
 							})
-							->orWhere(Capsule::raw('lower(cves.setting_value)'), 'LIKE', "%{$word}%");
+							->orWhere(Capsule::raw('lower(cves.setting_value)'), 'LIKE', "%{$word}%")
+							->orWhere(Capsule::raw('lower(pn.note)'), 'LIKE', "%{$word}%");
 					});
 				}
 			}
