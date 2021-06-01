@@ -62,7 +62,7 @@ class ReviewRoundModalHandler extends Handler {
 		$templateMgr = TemplateManager::getManager($request);
 		$reviewRoundNumber = $args['reviewRoundNumber'];
 
-		$submissionDao = Application::getSubmissionDAO();
+		$submissionDao = DAORegistry::getDAO('SubmissionDAO');
 		$submission = $submissionDao->getById($args['submissionId']);
 
 		$currentUserId = $request->getUser()->getId();
