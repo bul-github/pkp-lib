@@ -52,6 +52,7 @@ class ViewSubmissionMetadataHandler extends handler {
 
 		$templateMgr->assign('publication', $publication);
 
+		$additionalMetadata[] = array();
 		if ($publication->getLocalizedData('keywords')) {
 			$additionalMetadata[] = array(__('common.keywords'), implode(', ', $publication->getLocalizedData('keywords')));
 		}
