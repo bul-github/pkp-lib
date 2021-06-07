@@ -1,5 +1,6 @@
 {
 	"require": {
+	  	"smalot/pdfparser": "^1.0",
 		"ralouphie/getallheaders": "*",
 		"components/jqueryui": "1.*",
 		"components/jquery": "^3.5",

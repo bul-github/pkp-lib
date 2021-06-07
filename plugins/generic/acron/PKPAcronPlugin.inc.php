@@ -303,7 +303,7 @@ class PKPAcronPlugin extends GenericPlugin {
 					$frequencyAttributes = $frequency->getAttributes();
 					if (is_array($frequencyAttributes)) {
 						foreach($frequencyAttributes as $key => $value) {
-							if ($value != 0) {
+							if ($value != 0 || !is_numeric($value)) {
 								$setDefaultFrequency = false;
 								break;
 							}

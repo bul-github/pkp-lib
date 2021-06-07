@@ -102,6 +102,8 @@ class PKPSubmissionSubmitStep3Form extends SubmissionSubmitForm {
 		// Save the submission.
 		$submissionDao->updateObject($this->submission);
 
+		HookRegistry::call('PKPSubmissionSubmitStep3Form::execute', array(&$this->submission));
+
 		return $this->submissionId;
 	}
 }
