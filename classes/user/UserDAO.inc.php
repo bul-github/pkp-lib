@@ -257,9 +257,14 @@ class UserDAO extends DAO {
 		$userId = $user->getId();
 
 		$privateNotesDAO = DAORegistry::getDAO('PrivateNotesDAO');
-		$privateNote = $privateNotesDAO->getNote($contextId, $userId);
+		$privateNote = $privateNotesDAO->getPrivateNote($contextId, $userId);
 
-		$user->setGossip($privateNote);
+		$note = "";
+		if ($privateNote) {
+			$note = $privateNote->getNote();
+		}
+
+		$user->setGossip($note);
 	}
 
 	/**
@@ -278,7 +283,7 @@ class UserDAO extends DAO {
 		$privateNote = $user->getGossip();
 
 		$privateNotesDAO = DAORegistry::getDAO('PrivateNotesDAO');
-		$privateNotesDAO->setNote($contextId, $userId, $privateNote);
+		$privateNotesDAO->setPrivateNote($contextId, $userId, $privateNote);
 	}
 
 	/**

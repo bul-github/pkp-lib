@@ -21,22 +21,15 @@ class PrivateNotesDAO extends DAO {
 
 	/**
 	 * Retrieve a user private note value.
-	 *
 	 * @param $journalId int
 	 * @param $userId int
-	 *
-	 * @return string
+	 * @return PrivateNote
 	 */
-	function getNote($journalId, $userId) {
+	function getPrivateNote($journalId, $userId) {
 		$params = array((int) $journalId, (int) $userId);
 		$result = $this->retrieve('SELECT * FROM private_notes WHERE context_id = ? AND user_id = ?', $params);
 		$factory = new DAOResultFactory($result, $this, '_returnPrivateNoteFromRow');
-		$privateNote = $factory->toIterator()->current();
-		$note = "";
-		if ($privateNote) {
-			$note = $privateNote->getNote();
-		}
-		return $note;
+		return $factory->toIterator()->current();
 	}
 
 	/**
@@ -68,16 +61,14 @@ class PrivateNotesDAO extends DAO {
 	 * @param $userId int
 	 * @param $note string
 	 */
-	function setNote($journalId, $userId, $note) {
+	function setPrivateNote($journalId, $userId, $note) {
 		$params = array($note, (int) $journalId, (int) $userId);
-
-		$oldNote = $this->getNote($journalId, $userId);
-		if (isset($oldNote)) {
+		$dbPrivateNote = $this->getPrivateNote($journalId, $userId);
+		if ($dbPrivateNote) {
 			$this->update('UPDATE private_notes SET note = ? WHERE context_id = ? AND user_id = ?', $params);
-			return;
+		} else {
+			$this->update('INSERT INTO private_notes (note, context_id, user_id) VALUES (?, ?, ?)', $params);
 		}
-
-		$this->update('INSERT INTO private_notes (note, context_id, user_id) VALUES (?, ?, ?)', $params);
 	}
 }
 
