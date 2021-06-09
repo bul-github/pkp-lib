@@ -40,30 +40,32 @@
 								<legend>
 									{translate key="user.register.otherContextRoles"}
 								</legend>
-								{foreach from=$readerUserGroups[$contextId] item=userGroup}
-									{if $userGroup->getPermitSelfRegistration()}
-										{assign var="userGroupId" value=$userGroup->getId()}
-										<label>
-											<input type="checkbox" name="readerGroup[{$userGroupId}]"{if in_array($userGroupId, $userGroupIds)} checked="checked"{/if}>
-											{$userGroup->getLocalizedName()}
-										</label>
-										{if in_array($userGroupId, $userGroupIds)}
-											{assign var=isSelected value=true}
+								{if !$hideRolesTab}
+									{foreach from=$readerUserGroups[$contextId] item=userGroup}
+										{if $userGroup->getPermitSelfRegistration()}
+											{assign var="userGroupId" value=$userGroup->getId()}
+											<label>
+												<input type="checkbox" name="readerGroup[{$userGroupId}]"{if in_array($userGroupId, $userGroupIds)} checked="checked"{/if}>
+												{$userGroup->getLocalizedName()}
+											</label>
+											{if in_array($userGroupId, $userGroupIds)}
+												{assign var=isSelected value=true}
+											{/if}
 										{/if}
-									{/if}
-								{/foreach}
-								{foreach from=$reviewerUserGroups[$contextId] item=userGroup}
-									{if $userGroup->getPermitSelfRegistration()}
-										{assign var="userGroupId" value=$userGroup->getId()}
-										<label>
-											<input type="checkbox" name="reviewerGroup[{$userGroupId}]"{if in_array($userGroupId, $userGroupIds)} checked="checked"{/if}>
-											{$userGroup->getLocalizedName()}
-										</label>
-										{if in_array($userGroupId, $userGroupIds)}
-											{assign var=isSelected value=true}
+									{/foreach}
+									{foreach from=$reviewerUserGroups[$contextId] item=userGroup}
+										{if $userGroup->getPermitSelfRegistration()}
+											{assign var="userGroupId" value=$userGroup->getId()}
+											<label>
+												<input type="checkbox" name="reviewerGroup[{$userGroupId}]"{if in_array($userGroupId, $userGroupIds)} checked="checked"{/if}>
+												{$userGroup->getLocalizedName()}
+											</label>
+											{if in_array($userGroupId, $userGroupIds)}
+												{assign var=isSelected value=true}
+											{/if}
 										{/if}
-									{/if}
-								{/foreach}
+									{/foreach}
+								{/if}
 							</fieldset>
 							{* Require the user to agree to the terms of the context's privacy policy *}
 							{if !$enableSiteWidePrivacyStatement && $context->getData('privacyStatement')}

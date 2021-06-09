@@ -103,7 +103,7 @@
 
 		{* When a user is registering for no specific journal, allow them to
 		   enter their reviewer interests *}
-		{if !$currentContext}
+		{if !$currentContext and !$hideRolesTab}
 			<div class="fields">
 				<div class="reviewer_nocontext_interests">
 					<label>

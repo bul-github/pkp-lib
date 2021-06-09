@@ -333,6 +333,16 @@ class PKPTemplateManager extends Smarty {
 					// Assign a count of unread tasks
 					'unreadNotificationCount' => $notificationDao->getNotificationCount(false, $user->getId(), null, NOTIFICATION_LEVEL_TASK),
 				]);
+				$hasRoleInContext = $user->hasRole(ROLE_ID_SITE_ADMIN, 0);
+				if (!$hasRoleInContext) {
+					$context = $request->getContext();
+					if ($context) {
+						$contextId = $context->getId();
+						$roles = $user->getRoles($contextId);
+						$hasRoleInContext = count($roles) != 0;
+					}
+				}
+				$this->assign('hasRoleInContext', $hasRoleInContext);
 			}
 		}
 

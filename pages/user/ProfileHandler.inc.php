@@ -69,8 +69,10 @@ class ProfileHandler extends UserHandler {
 		$this->setupTemplate($request);
 
 		$templateMgr = TemplateManager::getManager($request);
+		$hideRolesTab = Config::getVar('interface', 'hide_roles_tab');
 		$templateMgr->assign([
 			'pageTitle' => __('user.profile'),
+			'hideRolesTab' => $hideRolesTab
 		]);
 		$templateMgr->display('user/profile.tpl');
 	}

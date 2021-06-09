@@ -22,6 +22,10 @@ class RegistrationHandler extends UserHandler {
 	 * @see PKPHandler::initialize()
 	 */
 	function initialize($request) {
+		if (!$request->getContext()) {
+			$homeUrl = sprintf('%s://%s%s', $request->getProtocol(), $request->getServerHost(), $request->getBasePath());
+			$request->redirectUrl($homeUrl);
+		}
 		AppLocale::requireComponents(LOCALE_COMPONENT_APP_COMMON);
 		parent::initialize($request);
 	}

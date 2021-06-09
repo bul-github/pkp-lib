@@ -110,11 +110,13 @@ class RegistrationForm extends Form {
 		$userFormHelper = new UserFormHelper();
 		$userFormHelper->assignRoleContent($templateMgr, $request);
 
+		$hideRolesTab = Config::getVar('interface', 'hide_roles_tab');
 		$templateMgr->assign(array(
 			'source' =>$request->getUserVar('source'),
 			'minPasswordLength' => $site->getMinPasswordLength(),
 			'enableSiteWidePrivacyStatement' => Config::getVar('general', 'sitewide_privacy_statement'),
 			'siteWidePrivacyStatement' => $site->getData('privacyStatement'),
+			'hideRolesTab', $hideRolesTab,
 		));
 
 		return parent::fetch($request, $template, $display);
@@ -277,15 +279,26 @@ class RegistrationForm extends Form {
 		$session = $sessionManager->getUserSession();
 		$session->setSessionVar('username', $user->getUsername());
 
-		// Save the selected roles or assign the Reader role if none selected
-		if ($request->getContext() && !$this->getData('reviewerGroup')) {
-			$userGroupDao = DAORegistry::getDAO('UserGroupDAO'); /* @var $userGroupDao UserGroupDAO */
-			$defaultReaderGroup = $userGroupDao->getDefaultByRoleId($request->getContext()->getId(), ROLE_ID_READER);
-			if ($defaultReaderGroup) $userGroupDao->assignUserToGroup($user->getId(), $defaultReaderGroup->getId(), $request->getContext()->getId());
-		} else {
+		// By default, assign the Reader and Author roles.
+		$contextId = $request->getContext()->getId();
+		$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
+		// Reader group...
+		$defaultReaderGroup = $userGroupDao->getDefaultByRoleId($contextId, ROLE_ID_READER);
+		if ($defaultReaderGroup) {
+			$readerGroupId = $defaultReaderGroup->getId();
+			$userGroupDao->assignUserToGroup($userId, $readerGroupId, $contextId);
+		}
+		// Author group...
+		$defaultAuthorGroup = $userGroupDao->getDefaultByRoleId($contextId, ROLE_ID_AUTHOR);
+		if ($defaultAuthorGroup) {
+			$authorGroupId = $defaultAuthorGroup->getId();
+			$userGroupDao->assignUserToGroup($userId, $authorGroupId, $contextId);
+		}
+		// Assign Reviewer Role if selected
+		if ($contextId && $this->getData('reviewerGroup')) {
 			import('lib.pkp.classes.user.form.UserFormHelper');
 			$userFormHelper = new UserFormHelper();
-			$userFormHelper->saveRoleContent($this, $user);
+			$userFormHelper->saveRoleContent($this, $user, true);
 		}
 
 		// Save the email notification preference

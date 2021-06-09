@@ -61,8 +61,9 @@ class UserFormHelper {
 	 * Save role elements of an executed user form.
 	 * @param $form Form The form from which to fetch elements
 	 * @param $user User The current user
+	 * @param $fromRegisterForm Boolean If the method has been called from the Register Form
 	 */
-	function saveRoleContent($form, $user) {
+	function saveRoleContent($form, $user, $fromRegisterForm = false) {
 		$userGroupDao = DAORegistry::getDAO('UserGroupDAO'); /* @var $userGroupDao UserGroupDAO */
 		$contextDao = Application::getContextDAO();
 		$contexts = $contextDao->getAll(true);
@@ -92,7 +93,23 @@ class UserFormHelper {
 					$inGroup = $userGroupDao->userInGroup($user->getId(), $groupId);
 					if (!$inGroup && array_key_exists($groupId, $groupFormData)) {
 						$userGroupDao->assignUserToGroup($user->getId(), $groupId, $context->getId());
-					} elseif ($inGroup && !array_key_exists($groupId, $groupFormData)) {
+						// Send an email to journals principal contact if user is asking for the Reviewer role.
+						if ($groupData['formElement'] == 'reviewerGroup') {
+							$contactName = $context->getData('contactName');
+							$contactEmail = $context->getData('contactEmail');
+							import('lib.pkp.classes.mail.MailTemplate');
+							$mail = new MailTemplate('ASK_FOR_REVIEWER_ROLE');
+							$mail->setReplyTo(null);
+							$mail->addRecipient($contactEmail, $contactName);
+							$mail->assignParams(array(
+								'contextName' => $context->getLocalizedName(),
+								'contactName' => $contactName,
+								'userFullName' => $user->getFullName(),
+								'userEmail' => $user->getEmail(),
+							));
+							$mail->send();
+						}
+					} elseif ($inGroup && !array_key_exists($groupId, $groupFormData) && !$fromRegisterForm) {
 						$userGroupDao->removeUserFromGroup($user->getId(), $groupId, $context->getId());
 					}
 				}

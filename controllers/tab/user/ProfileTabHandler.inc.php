@@ -114,6 +114,10 @@ class ProfileTabHandler extends Handler {
 	 * @return JSONMessage JSON-formatted response
 	 */
 	function roles($args, $request) {
+		$hideRolesTab = Config::getVar('interface', 'hide_roles_tab');
+		if ($hideRolesTab) {
+			return new JSONMessage(false);
+		}
 		$this->setupTemplate($request);
 		import('lib.pkp.classes.user.form.RolesForm');
 		$rolesForm = new RolesForm($request->getUser());
@@ -128,6 +132,10 @@ class ProfileTabHandler extends Handler {
 	 * @return JSONMessage JSON-formatted response
 	 */
 	function saveRoles($args, $request) {
+		$hideRolesTab = Config::getVar('interface', 'hide_roles_tab');
+		if ($hideRolesTab) {
+			return new JSONMessage(false);
+		}
 		$this->setupTemplate($request);
 
 		import('lib.pkp.classes.user.form.RolesForm');

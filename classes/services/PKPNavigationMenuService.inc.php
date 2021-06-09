@@ -155,10 +155,10 @@ class PKPNavigationMenuService {
 				$navigationMenuItem->setIsDisplayed($context && ($context->getData('mailingAddress') || $context->getData('contactName')));
 				break;
 			case NMI_TYPE_USER_REGISTER:
-				$navigationMenuItem->setIsDisplayed(!$isUserLoggedIn && !($context && $context->getData('disableUserReg')));
+				$navigationMenuItem->setIsDisplayed(!$isUserLoggedIn && $context && !$context->getData('disableUserReg'));
 				break;
 			case NMI_TYPE_USER_LOGIN:
-				$navigationMenuItem->setIsDisplayed(!$isUserLoggedIn);
+				$navigationMenuItem->setIsDisplayed(!$isUserLoggedIn && $context);
 				break;
 			case NMI_TYPE_USER_LOGOUT:
 			case NMI_TYPE_USER_PROFILE:

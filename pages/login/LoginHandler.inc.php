@@ -40,6 +40,18 @@ class LoginHandler extends Handler {
 			$this->sendHome($request);
 		}
 
+		if (!$request->getContext()) {
+			$contextDao = Application::getContextDAO();
+			$contexts = $contextDao->getAll(true);
+
+			// If there's at least one available journal, excluding the default one,
+			// prevent the access to the login page on the index page.
+			if (count($contexts) > 1) {
+				$homeUrl = sprintf('%s://%s%s', $request->getProtocol(), $request->getServerHost(), $request->getBasePath());
+				$request->redirectUrl($homeUrl);
+			}
+		}
+
 		if (Config::getVar('security', 'force_login_ssl') && $request->getProtocol() != 'https') {
 			// Force SSL connections for login
 			$request->redirectSSL();
@@ -104,6 +116,41 @@ class LoginHandler extends Handler {
 				$request->redirect(null, null, 'changePassword', $user->getUsername());
 
 			} else {
+				$hideRolesTab = Config::getVar('interface', 'hide_roles_tab');
+				if ($hideRolesTab && isset($user->isFromLdap)) {
+					// The roles tab from user profile is not available when this setting is on. The user
+					// can't assign himself the author role, so the system must do it for him at login time.
+					// This should work only for LDAP connections.
+					// Assign Author role to the  signed in user.
+					$context = $request->getContext();
+					if (is_null($context)) {
+						return;
+					}
+					/*$contextDao = DAORegistry::getDAO('JournalDAO');
+					$contexts = $contextDao->getAll();
+					foreach ($contexts as $context) {
+						// Do code below...
+					}*/
+					$disableUserReg = $context->getData('disableUserReg');
+					if ($disableUserReg === true) {
+						return;
+					}
+					$contextId = $context->getId();
+					if (!$user->hasRole(array(ROLE_ID_AUTHOR), $contextId)) {
+						$userGroupDao = DAORegistry::getDAO('UserGroupDAO');
+						$userGroups = $userGroupDao->getByRoleId($contextId, ROLE_ID_AUTHOR);
+						$userId = $user->getId();
+						while ($userGroup = $userGroups->next()) {
+							if (!$userGroup->getPermitSelfRegistration()) {
+								continue;
+							}
+							$groupId = $userGroup->getId();
+							if (!$userGroupDao->userInGroup($userId, $groupId)) {
+								$userGroupDao->assignUserToGroup($userId, $groupId, $contextId);
+							}
+						}
+					}
+				}
 				$source = $request->getUserVar('source');
 				$redirectNonSsl = Config::getVar('security', 'force_login_ssl') && !Config::getVar('security', 'force_ssl');
 				if (preg_match('#^/\w#', $source) === 1) {
