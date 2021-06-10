@@ -474,8 +474,6 @@ class UserGroupDAO extends DAO {
 		);
 		if ($contextId) {
 			$params[] = (int) $contextId;
-			// Add it twice to search in private notes.
-			$params[] = (int) $contextId;
 		}
 		if ($userGroupId) $params[] = (int) $userGroupId;
 
@@ -493,7 +491,6 @@ class UserGroupDAO extends DAO {
 				' . $this->userDao->getFetchJoins() .'
 				LEFT JOIN user_settings usgs ON (usgs.user_id = u.user_id AND usgs.setting_name = ?)
 				LEFT JOIN user_settings usfs ON (usfs.user_id = u.user_id AND usfs.setting_name = ?)
-				' . ($contextId ? 'LEFT JOIN private_notes pn ON (pn.user_id = u.user_id AND pn.context_id = ?)' : '') . '
 			WHERE	1=1 ' .
 				($contextId?'AND ug.context_id = ? ':'') .
 				($userGroupId?'AND ug.user_group_id = ? ':'') .
@@ -796,7 +793,7 @@ class UserGroupDAO extends DAO {
 
 			if (!isset($searchTypeMap[$searchType])) {
 				$str = $this->concat('COALESCE(usgs.setting_value,\'\')', 'COALESCE(usfs.setting_value,\'\')', 'u.email', 'COALESCE(us.setting_value,\'\')');
-				$concatFields = ' ( LOWER(' . $str . ') LIKE ? OR LOWER(cves.setting_value) LIKE ? ' . ($contextId ? 'OR LOWER(pn.note) LIKE ?' : '') . ')';
+				$concatFields = ' ( LOWER(' . $str . ') LIKE ? OR LOWER(cves.setting_value) LIKE ?)';
 
 				$search = strtolower($search);
 
