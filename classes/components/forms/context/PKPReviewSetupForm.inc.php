@@ -93,6 +93,12 @@ class PKPReviewSetupForm extends FormComponent {
 					'description' => __('manager.setup.reviewOptions.reminders.submit.description'),
 					'value' => $context->getData('numDaysBeforeSubmitReminder'),
 					'size' => 'small',
+				]))
+				->addField(new FieldText('numDaysBeforeRevisionsReminder', [
+					'label' => __('manager.setup.submissionOptions.reminders.submit'),
+					'description' => __('manager.setup.submissionOptions.reminders.submit.description'),
+					'value' => $context->getData('numDaysBeforeRevisionsReminder'),
+					'size' => 'small',
 				]));
 		} else {
 			$this->addField(new FieldHTML('reviewRemindersDisabled', [

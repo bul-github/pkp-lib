@@ -210,6 +210,7 @@
 		<field name="date_decided" type="T">
 			<NOTNULL/>
 		</field>
+		<field name="date_reminded" type="T" />
 		<descr>Editor decisions.</descr>
 		<index name="edit_decisions_submission_id">
 			<col>submission_id</col>

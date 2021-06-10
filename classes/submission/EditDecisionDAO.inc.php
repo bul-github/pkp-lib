@@ -16,6 +16,7 @@
 // Bring in editor decision constants
 // FIXME: These should be standardized into lib-pkp.
 import('classes.workflow.EditorDecisionActionsManager');
+import('lib.pkp.classes.submission.EditDecision');
 
 class EditDecisionDAO extends DAO {
 
@@ -183,6 +184,91 @@ class EditDecisionDAO extends DAO {
 		}
 
 		return $sentRevisions;
+	}
+
+	/**
+	 * Get all pending revisions for all journals.
+	 * @return array
+	 */
+	function getPendingRevisions() {
+		// Stage 3 => evaluation process.
+		// Decision 2 => asking for revisions.
+		$params = array(3, 2);
+		$result = $this->retrieve(
+			'SELECT ed.*
+			FROM edit_decisions ed
+			INNER JOIN (
+				SELECT edj.submission_id, MAX(edj.date_decided) as max_date
+				FROM edit_decisions edj
+				GROUP BY edj.submission_id
+			) AS edj ON ed.submission_id = edj.submission_id AND ed.date_decided = edj.max_date
+			WHERE ed.stage_id = ? and ed.decision = ?
+			ORDER BY ed.submission_id',
+			$params
+		);
+		$pendingRevisions = array();
+		foreach ($result as $row) {
+			$pendingRevisions[] = $this->_fromRow((array) $row);
+		}
+		return $pendingRevisions;
+	}
+	/**
+	 * Internal function to return an edit decision object from a row.
+	 * @param $row array
+	 * @return EditDecision
+	 */
+	function _fromRow($row) {
+		$editDecision = $this->newDataObject();
+		$editDecision->setId($row['edit_decision_id']);
+		$editDecision->setSubmissionId($row['submission_id']);
+		$editDecision->setReviewRoundId($row['review_round_id']);
+		$editDecision->setStageId($row['stage_id']);
+		$editDecision->setRound($row['round']);
+		$editDecision->setEditorId($row['editor_id']);
+		$editDecision->setDecision($row['decision']);
+		$editDecision->setDateDecided($this->datetimeFromDB($row['date_decided']));
+		$editDecision->setDateReminded($this->datetimeFromDB($row['date_reminded']));
+		return $editDecision;
+	}
+
+	/**
+	 * Return a new edit decision data object.
+	 * @return DataObject
+	 */
+	function newDataObject() {
+		return new EditDecision();
+	}
+
+	/**
+	 * Update an existing edit decision.
+	 * @param $editDecision EditDecision
+	 */
+	function updateObject($editDecision)
+	{
+		$this->update(
+			sprintf('UPDATE edit_decisions
+				SET	submission_id = ?,
+					review_round_id = ?,
+					stage_id = ?,
+					round = ?,
+					editor_id = ?,
+					decision = ?,
+					date_decided = %s,
+					date_reminded = %s
+				WHERE edit_decision_id = ?',
+				$this->datetimeToDB($editDecision->getDateDecided()),
+				$this->datetimeToDB($editDecision->getDateReminded())
+			),
+			array(
+				$editDecision->getSubmissionId(),
+				$editDecision->getReviewRoundId(),
+				$editDecision->getStageId(),
+				$editDecision->getRound(),
+				$editDecision->getEditorId(),
+				$editDecision->getDecision(),
+				(int)$editDecision->getId()
+			)
+		);
 	}
 }
 

@@ -414,6 +414,13 @@
 				"min:0"
 			]
 		},
+		"numDaysBeforeRevisionsReminder": {
+		  "type": "integer",
+		  "validation": [
+			"nullable",
+			"min:0"
+		  ]
+		},
 		"numPageLinks": {
 			"type": "integer",
 			"default": 10,

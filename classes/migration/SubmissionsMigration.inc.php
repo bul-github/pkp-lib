@@ -99,6 +99,7 @@ class SubmissionsMigration extends Migration {
 			$table->bigInteger('editor_id');
 			$table->smallInteger('decision');
 			$table->datetime('date_decided');
+			$table->datetime('date_reminded')->nullable();
 			$table->index(['submission_id'], 'edit_decisions_submission_id');
 			$table->index(['editor_id'], 'edit_decisions_editor_id');
 		});

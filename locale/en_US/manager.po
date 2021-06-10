@@ -2018,3 +2018,9 @@ msgstr "Desk Reject Rate"
 
 msgid "stats.name.declinedReviewRate"
 msgstr "After Review Reject Rate"
+
+msgid "manager.setup.submissionOptions.reminders.submit"
+msgstr "Automatic email notification to journal staff"
+
+msgid "manager.setup.submissionOptions.reminders.submit.description"
+msgstr "Send a notification to journal staff if the author has not provided a revised article in the following delay (days):"
