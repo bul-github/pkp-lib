@@ -349,6 +349,54 @@ class ReviewAssignment extends DataObject {
 	}
 
 	/**
+	 * Get the reviewer's invite reminder count.
+	 * @return int
+	 */
+	function getInviteRemindedCount() {
+		return $this->getData('inviteRemindedCount');
+	}
+
+	/**
+	 * Set the reviewer's invite reminder count.
+	 * @param $inviteRemindedCount int
+	 */
+	function setInviteRemindedCount($inviteRemindedCount) {
+		$this->setData('inviteRemindedCount', $inviteRemindedCount);
+	}
+
+	/**
+	 * Get the reviewer's last submit reminder date.
+	 * @return string
+	 */
+	function getDateSubmitReminded() {
+		return $this->getData('dateSubmitReminded');
+	}
+
+	/**
+	 * Set the reviewer's last submit reminder date.
+	 * @param $dateSubmitReminded string
+	 */
+	function setDateSubmitReminded($dateSubmitReminded) {
+		$this->setData('dateSubmitReminded', $dateSubmitReminded);
+	}
+
+	/**
+	 * Get the reviewer's submit reminder count.
+	 * @return int
+	 */
+	function getSubmitRemindedCount() {
+		return $this->getData('submitRemindedCount');
+	}
+
+	/**
+	 * Set the reviewer's submit reminder count.
+	 * @param $submitRemindedCount int
+	 */
+	function setSubmitRemindedCount($submitRemindedCount) {
+		$this->setData('submitRemindedCount', $submitRemindedCount);
+	}
+
+	/**
 	 * Get the reviewer's due date.
 	 * @return string
 	 */

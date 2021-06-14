@@ -2149,3 +2149,15 @@ msgstr "Rappels automatiques par courriel pour les auteurs"
 
 msgid "manager.setup.submissionOptions.reminders.submit.description"
 msgstr "Envoyer un rappel si l'auteur n'a pas répondu à la demande de révision dans le délai suivant (jours) :"
+
+msgid "manager.setup.reviewOptions.occurrencesForInvite"
+msgstr "Nombre d'occurrences pour le rappel des demandes d'évaluations :"
+
+msgid "manager.setup.reviewOptions.occurrencesForInvite.description"
+msgstr "Laisser le champ vide pour ne pas limiter le nombre d'occurrences"
+
+msgid "manager.setup.reviewOptions.occurrencesForSubmit"
+msgstr "Nombre d'occurrences pour le rappel des recommandations :"
+
+msgid "manager.setup.reviewOptions.occurrencesForSubmit.description"
+msgstr "Laisser le champ vide pour ne pas limiter le nombre d'occurrences"

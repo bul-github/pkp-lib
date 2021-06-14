@@ -1984,3 +1984,6 @@ msgstr "Decline reason sent by email"
 
 msgid "reviewer.submission.emailLog.defaultMessage"
 msgstr "You declined our invitation to this review round."
+
+msgid "common.reminded.submit.date"
+msgstr "Reminded for evaluation: {$dateSubmitReminded}"

@@ -43,6 +43,9 @@ class ReviewsMigration extends Migration {
 			$table->bigInteger('reviewer_file_id')->nullable();
 			$table->datetime('date_rated')->nullable();
 			$table->datetime('date_reminded')->nullable();
+			$table->smallInteger('count_invite_reminder')->nullable();
+			$table->datetime('date_submit_reminded')->nullable();
+			$table->smallInteger('count_submit_reminder')->nullable();
 			$table->smallInteger('quality')->nullable();
 			$table->bigInteger('review_round_id');
 			$table->smallInteger('stage_id');

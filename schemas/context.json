@@ -407,6 +407,14 @@
 				"min:0"
 			]
 		},
+		"numOccurrencesForInviteReminder": {
+			"type": "integer",
+		  	"default": 1,
+			"validation": [
+				"nullable",
+				"min:1"
+			]
+		},
 		"numDaysBeforeSubmitReminder": {
 			"type": "integer",
 			"validation": [
@@ -414,12 +422,20 @@
 				"min:0"
 			]
 		},
+		"numOccurrencesForSubmitReminder": {
+			"type": "integer",
+		  	"default": 1,
+			"validation": [
+				"nullable",
+				"min:1"
+			]
+		},
 		"numDaysBeforeRevisionsReminder": {
-		  "type": "integer",
-		  "validation": [
-			"nullable",
-			"min:0"
-		  ]
+			"type": "integer",
+			"validation": [
+				"nullable",
+				"min:0"
+			]
 		},
 		"numPageLinks": {
 			"type": "integer",

@@ -2018,3 +2018,6 @@ msgstr "Courriel de refus envoyé"
 
 msgid "reviewer.submission.emailLog.defaultMessage"
 msgstr "Vous aviez décliné notre invitation à évaluer lors de ce cycle."
+
+msgid "common.reminded.submit.date"
+msgstr "Rappel pour l'évaluation fait le : {$dateSubmitReminded}"

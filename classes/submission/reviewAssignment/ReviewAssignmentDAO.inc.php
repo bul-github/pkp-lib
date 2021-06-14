@@ -318,12 +318,16 @@ class ReviewAssignmentDAO extends DAO {
 				date_completed, date_acknowledged, date_due, date_response_due,
 				quality, date_rated,
 				last_modified,
-				date_reminded, reminder_was_automatic,
+                date_reminded,
+				count_invite_reminder,
+				date_submit_reminded,
+				count_submit_reminder,
+                reminder_was_automatic,
 				review_form_id,
 				review_round_id,
 				unconsidered
 				) VALUES (
-				?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, %s, %s, %s, ?, %s, %s, %s, ?, ?, ?, ?
+				?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, %s, %s, %s, ?, %s, %s, %s, ?, %s, ?, ?, ?, ?, ?
 				)',
 				$this->datetimeToDB($reviewAssignment->getDateAssigned()),
 				$this->datetimeToDB($reviewAssignment->getDateNotified()),
@@ -334,7 +338,8 @@ class ReviewAssignmentDAO extends DAO {
 				$this->datetimeToDB($reviewAssignment->getDateResponseDue()),
 				$this->datetimeToDB($reviewAssignment->getDateRated()),
 				$this->datetimeToDB($reviewAssignment->getLastModified()),
-				$this->datetimeToDB($reviewAssignment->getDateReminded())
+				$this->datetimeToDB($reviewAssignment->getDateReminded()),
+				$this->datetimeToDB($reviewAssignment->getDateSubmitReminded())
 			), array(
 				(int) $reviewAssignment->getSubmissionId(),
 				(int) $reviewAssignment->getReviewerId(),
@@ -346,6 +351,8 @@ class ReviewAssignmentDAO extends DAO {
 				(int) $reviewAssignment->getDeclined(),
 				(int) $reviewAssignment->getCancelled(),
 				$reviewAssignment->getQuality(),
+				$reviewAssignment->getInviteRemindedCount(),
+				$reviewAssignment->getSubmitRemindedCount(),
 				(int) $reviewAssignment->getReminderWasAutomatic(),
 				$reviewAssignment->getReviewFormId(),
 				(int) $reviewAssignment->getReviewRoundId(),
@@ -386,12 +393,15 @@ class ReviewAssignmentDAO extends DAO {
 					date_rated = %s,
 					last_modified = %s,
 					date_reminded = %s,
+					count_invite_reminder = ?,
+					date_submit_reminded = %s,
+					count_submit_reminder = ?,
 					reminder_was_automatic = ?,
 					review_form_id = ?,
 					review_round_id = ?,
 					unconsidered = ?
 				WHERE review_id = ?',
-				$this->datetimeToDB($reviewAssignment->getDateAssigned()), $this->datetimeToDB($reviewAssignment->getDateNotified()), $this->datetimeToDB($reviewAssignment->getDateConfirmed()), $this->datetimeToDB($reviewAssignment->getDateCompleted()), $this->datetimeToDB($reviewAssignment->getDateAcknowledged()), $this->datetimeToDB($reviewAssignment->getDateDue()), $this->datetimeToDB($reviewAssignment->getDateResponseDue()), $this->datetimeToDB($reviewAssignment->getDateRated()), $this->datetimeToDB($reviewAssignment->getLastModified()), $this->datetimeToDB($reviewAssignment->getDateReminded())),
+				$this->datetimeToDB($reviewAssignment->getDateAssigned()), $this->datetimeToDB($reviewAssignment->getDateNotified()), $this->datetimeToDB($reviewAssignment->getDateConfirmed()), $this->datetimeToDB($reviewAssignment->getDateCompleted()), $this->datetimeToDB($reviewAssignment->getDateAcknowledged()), $this->datetimeToDB($reviewAssignment->getDateDue()), $this->datetimeToDB($reviewAssignment->getDateResponseDue()), $this->datetimeToDB($reviewAssignment->getDateRated()), $this->datetimeToDB($reviewAssignment->getLastModified()), $this->datetimeToDB($reviewAssignment->getDateReminded()),$this->datetimeToDB($reviewAssignment->getDateSubmitReminded())),
 			array(
 				(int) $reviewAssignment->getSubmissionId(),
 				(int) $reviewAssignment->getReviewerId(),
@@ -403,6 +413,8 @@ class ReviewAssignmentDAO extends DAO {
 				(int) $reviewAssignment->getDeclined(),
 				(int) $reviewAssignment->getCancelled(),
 				$reviewAssignment->getQuality(),
+				(int) $reviewAssignment->getInviteRemindedCount(),
+				(int) $reviewAssignment->getSubmitRemindedCount(),
 				$reviewAssignment->getReminderWasAutomatic(),
 				$reviewAssignment->getReviewFormId(),
 				(int) $reviewAssignment->getReviewRoundId(),
@@ -466,6 +478,9 @@ class ReviewAssignmentDAO extends DAO {
 		$reviewAssignment->setQuality($row['quality']);
 		$reviewAssignment->setDateRated($this->datetimeFromDB($row['date_rated']));
 		$reviewAssignment->setDateReminded($this->datetimeFromDB($row['date_reminded']));
+		$reviewAssignment->setInviteRemindedCount($row['count_invite_reminder']);
+		$reviewAssignment->setDateSubmitReminded($this->datetimeFromDB($row['date_submit_reminded']));
+		$reviewAssignment->setSubmitRemindedCount($row['count_submit_reminder']);
 		$reviewAssignment->setReminderWasAutomatic((int) $row['reminder_was_automatic']);
 		$reviewAssignment->setRound((int) $row['round']);
 		$reviewAssignment->setReviewFormId($row['review_form_id']);

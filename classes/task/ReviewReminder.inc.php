@@ -16,7 +16,9 @@
 import('lib.pkp.classes.scheduledTask.ScheduledTask');
 
 define('REVIEW_REMIND_AUTO', 'REVIEW_REMIND_AUTO');
+define('REVIEW_REMIND_AUTO_ONECLICK', 'REVIEW_REMIND_AUTO_ONECLICK');
 define('REVIEW_REQUEST_REMIND_AUTO', 'REVIEW_REQUEST_REMIND_AUTO');
+define('REVIEW_REQUEST_REMIND_AUTO_ONECLICK', 'REVIEW_REQUEST_REMIND_AUTO_ONECLICK');
 
 class ReviewReminder extends ScheduledTask {
 
@@ -49,10 +51,10 @@ class ReviewReminder extends ScheduledTask {
 		$reviewerAccessKeysEnabled = $context->getData('reviewerAccessKeysEnabled');
 		switch (true) {
 			case $reviewerAccessKeysEnabled && ($reminderType == REVIEW_REMIND_AUTO):
-				$emailKey = 'REVIEW_REMIND_AUTO_ONECLICK';
+				$emailKey = REVIEW_REMIND_AUTO_ONECLICK;
 				break;
 			case $reviewerAccessKeysEnabled && ($reminderType == REVIEW_REQUEST_REMIND_AUTO):
-				$emailKey = 'REVIEW_REQUEST_REMIND_AUTO_ONECLICK';
+				$emailKey = REVIEW_REQUEST_REMIND_AUTO_ONECLICK;
 				break;
 		}
 		$email = new SubmissionMailTemplate($submission, $emailKey, $context->getPrimaryLocale(), $context, false);
@@ -99,6 +101,12 @@ class ReviewReminder extends ScheduledTask {
 
 		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_REVIEWER);
 		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_COMMON);
+		if ($emailKey === REVIEW_REMIND_AUTO_ONECLICK || $emailKey === REVIEW_REMIND_AUTO) {
+			$occurrence = $reviewAssignment->getSubmitRemindedCount() + 1;
+		}
+		else {
+			$occurrence = $reviewAssignment->getInviteRemindedCount() + 1;
+		}
 		$paramArray = array(
 			'reviewerName' => $reviewer->getFullName(),
 			'reviewerUserName' => $reviewer->getUsername(),
@@ -109,12 +117,23 @@ class ReviewReminder extends ScheduledTask {
 			'submissionReviewUrl' => $submissionReviewUrl,
 			'messageToReviewer' => __('reviewer.step1.requestBoilerplate'),
 			'abstractTermIfEnabled' => ($submission->getLocalizedAbstract() == '' ? '' : __('common.abstract')),
+			'occurrence' => $occurrence,
 		);
 		$email->assignParams($paramArray);
 
 		$email->send();
 
-		$reviewAssignment->setDateReminded(Core::getCurrentDate());
+		$currentDate = Core::getCurrentDate();
+		if ($reminderType === REVIEW_REMIND_AUTO) {
+			$reviewAssignment->setDateSubmitReminded($currentDate);
+			$currentCount = $reviewAssignment->getSubmitRemindedCount();
+			$reviewAssignment->setSubmitRemindedCount($currentCount + 1);
+		}
+		else {
+			$reviewAssignment->setDateReminded($currentDate);
+			$currentCount = $reviewAssignment->getInviteRemindedCount();
+			$reviewAssignment->setInviteRemindedCount($currentCount + 1);
+		}
 		$reviewAssignment->setReminderWasAutomatic(1);
 		$reviewAssignmentDao->updateObject($reviewAssignment);
 
@@ -133,45 +152,77 @@ class ReviewReminder extends ScheduledTask {
 
 		$incompleteAssignments = $reviewAssignmentDao->getIncompleteReviewAssignments();
 		$inviteReminderDays = $submitReminderDays = null;
-		foreach ($incompleteAssignments as $reviewAssignment) {
-			// Avoid review assignments that a reminder exists for.
-			if ($reviewAssignment->getDateReminded() !== null) continue;
+		$inviteReminderOccurrences = $submitReminderOccurrences = null;
+		// If fast forward is enabled, reminders will be sent at minutes intervals instead of days.
+		// This is to ease development and testing process.
+		$reminderFastForward = Config::getVar('debug', 'reminder_fast_forward');
+		if ($reminderFastForward) {
+			$secondsInDay = 60;
+		} else {
+			$secondsInDay = 60 * 60 * 24;
+		}
 
+		foreach ($incompleteAssignments as $reviewAssignment) {
 			// Fetch the submission
-			if ($submission == null || $submission->getId() != $reviewAssignment->getSubmissionId()) {
+			if (!$submission || $submission->getId() != $reviewAssignment->getSubmissionId()) {
 				unset($submission);
 				$submission = $submissionDao->getById($reviewAssignment->getSubmissionId());
 				// Avoid review assignments without submission in database.
-				if (!$submission) continue;
-
+				if (!$submission) {
+					continue;
+				}
 			}
 
-			if ($submission->getStatus() != STATUS_QUEUED) continue;
+			if ($submission->getStatus() != STATUS_QUEUED) {
+				continue;
+			}
 
 			// Fetch the context
-			if ($context == null || $context->getId() != $submission->getContextId()) {
+			if (!$context || $context->getId() != $submission->getContextId()) {
 				unset($context);
 				$context = $contextDao->getById($submission->getContextId());
-
-				$inviteReminderDays = $context->getData('numDaysBeforeInviteReminder');
-				$submitReminderDays = $context->getData('numDaysBeforeSubmitReminder');
+				$inviteReminderDays = $context->getSetting('numDaysBeforeInviteReminder');
+				$submitReminderDays = $context->getSetting('numDaysBeforeSubmitReminder');
+				$inviteReminderOccurrences = $context->getSetting('numOccurrencesForInviteReminder');
+				$submitReminderOccurrences = $context->getSetting('numOccurrencesForSubmitReminder');
 			}
 
-			$reminderType = false;
-			if ($submitReminderDays>=1 && $reviewAssignment->getDateDue() != null) {
-				$checkDate = strtotime($reviewAssignment->getDateDue());
-				if (time() - $checkDate > 60 * 60 * 24 * $submitReminderDays) {
-					$reminderType = REVIEW_REMIND_AUTO;
+			$submitRemindedCount = $reviewAssignment->getSubmitRemindedCount();
+			if (!$submitRemindedCount || !$submitReminderOccurrences || $submitRemindedCount < $submitReminderOccurrences) {
+				$dateDue = $reviewAssignment->getDateDue();
+				if ($submitReminderDays >= 1 && $dateDue) {
+					$dateSubmitReminded = $reviewAssignment->getDateSubmitReminded();
+					if ($dateSubmitReminded) {
+						$time = strtotime($dateSubmitReminded);
+					}
+					else {
+						$time = strtotime($dateDue);
+					}
+					$checkDate = $time + ($secondsInDay * $submitReminderDays);
+					if (time() > $checkDate) {
+						$this->sendReminder($reviewAssignment, $submission, $context, REVIEW_REMIND_AUTO);
+					}
 				}
 			}
-			if ($inviteReminderDays>=1 && $reviewAssignment->getDateConfirmed() == null) {
-				$checkDate = strtotime($reviewAssignment->getDateResponseDue());
-				if (time() - $checkDate > 60 * 60 * 24 * $inviteReminderDays) {
-					$reminderType = REVIEW_REQUEST_REMIND_AUTO;
+
+			$inviteRemindedCount = $reviewAssignment->getInviteRemindedCount();
+			if (!$inviteRemindedCount || !$inviteReminderOccurrences || $inviteRemindedCount < $inviteReminderOccurrences) {
+				$dateConfirmed = $reviewAssignment->getDateConfirmed();
+				if ($inviteReminderDays >= 1 && !$dateConfirmed) {
+					$dateReminded = $reviewAssignment->getDateReminded();
+					if ($dateReminded) {
+						$time = strtotime($dateReminded);
+					}
+					else {
+						$dateResponseDue = $reviewAssignment->getDateResponseDue();
+						$time = strtotime($dateResponseDue);
+					}
+					$checkDate = $time + ($secondsInDay * $inviteReminderDays);
+					if (time() > $checkDate) {
+						$this->sendReminder($reviewAssignment, $submission, $context, REVIEW_REQUEST_REMIND_AUTO);
+					}
 				}
 			}
-
-			if ($reminderType) $this->sendReminder ($reviewAssignment, $submission, $context, $reminderType);
 		}
 
 		return true;

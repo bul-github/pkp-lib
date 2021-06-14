@@ -172,7 +172,9 @@ class ReviewReminderForm extends Form {
 		}
 
 		// update the ReviewAssignment with the reminded and modified dates
-		$reviewAssignment->setDateReminded(Core::getCurrentDate());
+		// Use the submit date as the message relates more to this reminder.
+		// Another date column can actually be created if needed.
+		$reviewAssignment->setDateSubmitReminded(Core::getCurrentDate());
 		$reviewAssignment->stampModified();
 		$reviewAssignmentDao = DAORegistry::getDAO('ReviewAssignmentDAO'); /* @var $reviewAssignmentDao ReviewAssignmentDAO */
 		$reviewAssignmentDao->updateObject($reviewAssignment);
