@@ -589,11 +589,12 @@ class PKPUserQueryBuilder implements EntityQueryBuilderInterface {
 		// reviewer data
 		if (!empty($this->getReviewerData)) {
 			$q->leftJoin('review_assignments as ra', 'u.user_id', '=', 'ra.reviewer_id');
-			$this->columns[] = Capsule::raw('MAX(ra.date_assigned) as last_assigned');
-			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.date_completed IS NULL AND ra.declined <> 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id) as incomplete_count');
-			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.date_completed IS NOT NULL AND ra.declined <> 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id) as complete_count');
-			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.declined = 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id) as declined_count');
-			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.cancelled = 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id) as cancelled_count');
+			$localOnly = \Config::getVar('interface', 'reviewers_stats_local_only');
+			$this->columns[] = Capsule::raw('(SELECT MAX(ra.date_assigned) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as last_assigned');
+			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.date_completed IS NULL AND ra.declined <> 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as incomplete_count');
+			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.date_completed IS NOT NULL AND ra.declined <> 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as complete_count');
+			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.declined = 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as declined_count');
+			$this->columns[] = Capsule::raw('(SELECT SUM(CASE WHEN ra.cancelled = 1 THEN 1 ELSE 0 END) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as cancelled_count');
 			switch (\Config::getVar('database', 'driver')) {
 				case 'mysql':
 				case 'mysqli':
@@ -602,12 +603,12 @@ class PKPUserQueryBuilder implements EntityQueryBuilderInterface {
 				default:
 					$dateDiffClause = 'DATE_PART(\'day\', ra.date_completed - ra.date_notified)';
 			}
-			$this->columns[] = Capsule::raw('AVG(' . $dateDiffClause . ') as average_time');
-			$this->columns[] = Capsule::raw('(SELECT AVG(ra.quality) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id AND ra.quality IS NOT NULL) as reviewer_rating');
+			$this->columns[] = Capsule::raw('(SELECT AVG(' . $dateDiffClause . ') FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ') as average_time');
+			$this->columns[] = Capsule::raw('(SELECT AVG(ra.quality) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ' AND ra.quality IS NOT NULL) as reviewer_rating');
 
 			// reviewer rating
 			if (!empty($this->reviewerRating)) {
-				$q->havingRaw('(SELECT AVG(ra.quality) FROM review_assignments AS ra WHERE u.user_id = ra.reviewer_id AND ra.quality IS NOT NULL) >= ' . (int) $this->reviewerRating);
+				$q->havingRaw('(SELECT AVG(ra.quality) FROM review_assignments AS ra' . ($localOnly ? ' LEFT JOIN submissions AS su ON ra.submission_id = su.submission_id' : '') . ' WHERE u.user_id = ra.reviewer_id' . ($localOnly ? ' AND su.context_id = ' . $this->contextId : '' ) . ' AND ra.quality IS NOT NULL) >= ' . (int) $this->reviewerRating);
 			}
 
 			// completed reviews
