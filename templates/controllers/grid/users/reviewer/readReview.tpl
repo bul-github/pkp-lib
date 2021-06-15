@@ -17,13 +17,19 @@
 	<input type="hidden" name="submissionId" value="{$reviewAssignment->getSubmissionId()|escape}" />
 	<input type="hidden" name="stageId" value="{$reviewAssignment->getStageId()|escape}" />
 
-
 	{fbvFormSection}
 		<div id="reviewAssignment-{$reviewAssignment->getId()|escape}">
 			<h2>{$reviewAssignment->getReviewerFullName()|escape}</h2>
 			{fbvFormSection class="description"}
 				{translate key="editor.review.readConfirmation"}
 			{/fbvFormSection}
+
+			{if $reviewAssignment->getCompetingInterests()}
+				<h3>{translate key="reviewer.submission.competingInterests"}</h3>
+				<div class="review_competing_interests">
+					{$reviewAssignment->getCompetingInterests()|nl2br|strip_unsafe_html}
+				</div>
+			{/if}
 
 			{if $reviewAssignment->getDateCompleted()}
 				{fbvFormSection}
@@ -52,12 +58,6 @@
 						<h4>{translate key="submission.comments.cannotShareWithAuthor"}</h4>
 						{include file="controllers/revealMore.tpl" content=$comment->getComments()|strip_unsafe_html}
 					{/iterate}
-				{/if}
-				{if $reviewAssignment->getCompetingInterests()}
-					<h3>{translate key="reviewer.submission.competingInterests"}</h3>
-					<div class="review_competing_interests">
-						{$reviewAssignment->getCompetingInterests()|nl2br|strip_unsafe_html}
-					</div>
 				{/if}
 
 			{else}
