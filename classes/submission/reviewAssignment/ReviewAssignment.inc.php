@@ -214,6 +214,22 @@ class ReviewAssignment extends DataObject {
 	}
 
 	/**
+	 * Get the review step.
+	 * @return int
+	 */
+	function getStep() {
+		return $this->getData('step');
+	}
+
+	/**
+	 * Set the review step.
+	 * @param $step int
+	 */
+	function setStep($step) {
+		$this->setData('step', $step);
+	}
+
+	/**
 	 * Get the date the reviewer was rated.
 	 * @return string
 	 */

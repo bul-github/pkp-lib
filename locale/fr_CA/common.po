@@ -2021,3 +2021,9 @@ msgstr "Vous aviez décliné notre invitation à évaluer lors de ce cycle."
 
 msgid "common.reminded.submit.date"
 msgstr "Rappel pour l'évaluation fait le : {$dateSubmitReminded}"
+
+msgid "notification.type.resetReviewDecision"
+msgstr "La décision de l'évaluateur a été réinitialisée."
+
+msgid "log.editor.resetReviewDecision"
+msgstr "La décision de l'évaluateur {$reviewerName} a été réinitialisé par {$editorName} pour la soumission {$submissionId}."

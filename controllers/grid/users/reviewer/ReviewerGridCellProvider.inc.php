@@ -143,6 +143,10 @@ class ReviewerGridCellProvider extends DataObjectGridCellProvider {
 					$user = $request->getUser();
 					import('lib.pkp.controllers.review.linkAction.ReviewNotesLinkAction');
 					return array(new ReviewNotesLinkAction($request, $reviewAssignment, $submission, $user, 'grid.users.reviewer.ReviewerGridHandler', true));
+				case REVIEW_ASSIGNMENT_STATUS_DECLINED:
+					$user = $request->getUser();
+					import('lib.pkp.controllers.review.linkAction.ResetReviewDecisionLinkAction');
+					return array(new ResetReviewDecisionLinkAction($request, $reviewAssignment, $submission, $user));
 			}
 
 		}

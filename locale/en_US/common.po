@@ -1987,3 +1987,9 @@ msgstr "You declined our invitation to this review round."
 
 msgid "common.reminded.submit.date"
 msgstr "Reminded for evaluation: {$dateSubmitReminded}"
+
+msgid "notification.type.resetReviewDecision"
+msgstr "The reviewer's decision has been reverted."
+
+msgid "log.editor.resetReviewDecision"
+msgstr "The decision from the reviewer {$reviewerName} has been reverted by {$editorName} for submission {$submissionId}."

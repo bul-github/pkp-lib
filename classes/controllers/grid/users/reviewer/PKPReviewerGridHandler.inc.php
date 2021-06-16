@@ -934,7 +934,7 @@ class PKPReviewerGridHandler extends GridHandler {
 	 */
 	function _getReviewAssignmentOps() {
 		// Define operations that need a review assignment policy.
-		return array('readReview', 'reviewHistory', 'reviewRead', 'editThankReviewer', 'thankReviewer', 'editReminder', 'sendReminder', 'unassignReviewer', 'updateUnassignReviewer', 'reinstateReviewer', 'updateReinstateReviewer', 'sendEmail', 'unconsiderReview', 'editReview', 'updateReview', 'gossip');
+		return array('readReview', 'reviewHistory', 'reviewRead', 'editThankReviewer', 'thankReviewer', 'editReminder', 'sendReminder', 'unassignReviewer', 'updateUnassignReviewer', 'reinstateReviewer', 'updateReinstateReviewer', 'sendEmail', 'unconsiderReview', 'editReview', 'updateReview', 'gossip', 'resetReviewDecision');
 
 	}
 
@@ -974,6 +974,7 @@ class PKPReviewerGridHandler extends GridHandler {
 			'reinstateReviewer', 'updateReinstateReviewer',
 			'unconsiderReview',
 			'editReview', 'updateReview',
+			'resetReviewDecision'
 		);
 	}
 
