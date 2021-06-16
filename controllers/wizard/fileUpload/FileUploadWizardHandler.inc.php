@@ -356,15 +356,11 @@ class FileUploadWizardHandler extends Handler {
 		$genreId = $args['genreId'];
 		HookRegistry::call('FileUploadWizardHandler::uploadFile', array('uploadedFile', &$errors, $genreId));
 		if ($errors) {
-			$messages = $errors->getMessages();
-			if ($messages) {
-				$clamAVError = isset($messages['clamAV']) ? $messages['clamAV'][0] : null;
-				if ($clamAVError) {
-					return new JSONMessage(false, $clamAVError);
-				}
-				$fileFormatError = isset($messages['fileFormat']) ? $messages['fileFormat'][0] : null;
-				if ($fileFormatError) {
-					return new JSONMessage(false, $fileFormatError);
+			foreach ($errors->getMessages() as $messageCategory) {
+				foreach ($messageCategory as $message) {
+					if ($message) {
+						return new JSONMessage(false, $message);
+					}
 				}
 			}
 		}
