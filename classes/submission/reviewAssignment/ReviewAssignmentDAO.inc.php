@@ -358,7 +358,8 @@ class ReviewAssignmentDAO extends DAO {
 				$reviewAssignment->getReviewFormId(),
 				(int) $reviewAssignment->getReviewRoundId(),
 				(int) $reviewAssignment->getUnconsidered(),
-				$reviewAssignment->getStep(),
+				// Cast it to an integer to convert null to 0 and avoid potential exceptions.
+				(int) $reviewAssignment->getStep(),
 			)
 		);
 
