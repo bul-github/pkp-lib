@@ -325,10 +325,9 @@ class ReviewAssignmentDAO extends DAO {
                 reminder_was_automatic,
 				review_form_id,
 				review_round_id,
-				unconsidered,
-                step
+				unconsidered
 				) VALUES (
-				?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, %s, %s, %s, ?, %s, %s, %s, ?, %s, ?, ?, ?, ?, ?, ?
+				?, ?, ?, ?, ?, ?, ?, ?, ?, %s, %s, %s, %s, %s, %s, %s, ?, %s, %s, %s, ?, %s, ?, ?, ?, ?, ?
 				)',
 				$this->datetimeToDB($reviewAssignment->getDateAssigned()),
 				$this->datetimeToDB($reviewAssignment->getDateNotified()),
@@ -358,8 +357,6 @@ class ReviewAssignmentDAO extends DAO {
 				$reviewAssignment->getReviewFormId(),
 				(int) $reviewAssignment->getReviewRoundId(),
 				(int) $reviewAssignment->getUnconsidered(),
-				// Cast it to an integer to convert null to 0 and avoid potential exceptions.
-				(int) $reviewAssignment->getStep(),
 			)
 		);
 
@@ -402,8 +399,7 @@ class ReviewAssignmentDAO extends DAO {
 					reminder_was_automatic = ?,
 					review_form_id = ?,
 					review_round_id = ?,
-					unconsidered = ?,
-				    step = ?
+					unconsidered = ?
 				WHERE review_id = ?',
 				$this->datetimeToDB($reviewAssignment->getDateAssigned()), $this->datetimeToDB($reviewAssignment->getDateNotified()), $this->datetimeToDB($reviewAssignment->getDateConfirmed()), $this->datetimeToDB($reviewAssignment->getDateCompleted()), $this->datetimeToDB($reviewAssignment->getDateAcknowledged()), $this->datetimeToDB($reviewAssignment->getDateDue()), $this->datetimeToDB($reviewAssignment->getDateResponseDue()), $this->datetimeToDB($reviewAssignment->getDateRated()), $this->datetimeToDB($reviewAssignment->getLastModified()), $this->datetimeToDB($reviewAssignment->getDateReminded()),$this->datetimeToDB($reviewAssignment->getDateSubmitReminded())),
 			array(
@@ -423,7 +419,6 @@ class ReviewAssignmentDAO extends DAO {
 				$reviewAssignment->getReviewFormId(),
 				(int) $reviewAssignment->getReviewRoundId(),
 				(int) $reviewAssignment->getUnconsidered(),
-				(int) $reviewAssignment->getStep(),
 				(int) $reviewAssignment->getId()
 			)
 		);
@@ -493,7 +488,6 @@ class ReviewAssignmentDAO extends DAO {
 		$reviewAssignment->setReviewMethod((int) $row['review_method']);
 		$reviewAssignment->setStageId((int) $row['stage_id']);
 		$reviewAssignment->setUnconsidered((int) $row['unconsidered']);
-		$reviewAssignment->setStep($row['step']);
 
 		return $reviewAssignment;
 	}
