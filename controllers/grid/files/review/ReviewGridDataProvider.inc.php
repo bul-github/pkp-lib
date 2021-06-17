@@ -18,13 +18,18 @@ class ReviewGridDataProvider extends SubmissionFilesGridDataProvider {
 	/** @var boolean */
 	protected $_showAll;
 
+	/** @var boolean */
+	protected $_isAskingRevision;
+
 	/**
 	 * Constructor
 	 * @copydoc SubmissionFilesGridDataProvider::__construct()
 	 * @param $showAll boolean True iff all review round files should be included.
+	 * @param $isAskingRevision boolean True when the redactor is asking author for revisions.
 	 */
-	function __construct($fileStageId, $viewableOnly = false, $showAll = false) {
+	function __construct($fileStageId, $viewableOnly = false, $showAll = false, $isAskingRevision = false) {
 		$this->_showAll = $showAll;
+		$this->_isAskingRevision = $isAskingRevision;
 		parent::__construct($fileStageId, $viewableOnly);
 	}
 
@@ -98,10 +103,17 @@ class ReviewGridDataProvider extends SubmissionFilesGridDataProvider {
 		$submission = $this->getSubmission();
 		$reviewRound = $this->getReviewRound();
 
+		if ($this->_isAskingRevision) {
+			$assocId = -1;
+			$assocType = ASSOC_TYPE_REVIEW_ASSIGNMENT;
+		} else {
+			$assocId = null;
+			$assocType = null;
+		}
 		return new AddFileLinkAction(
 			$request, $submission->getId(), $this->getStageId(),
 			$this->getUploaderRoles(), $this->getFileStage(),
-			null, null, $reviewRound->getId()
+			$assocType, $assocId, $reviewRound->getId()
 		);
 	}
 

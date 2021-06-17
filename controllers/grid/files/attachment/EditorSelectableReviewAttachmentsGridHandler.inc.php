@@ -23,7 +23,7 @@ class EditorSelectableReviewAttachmentsGridHandler extends SelectableFileListGri
 		// Pass in null stageId to be set in initialize from request var.
 		parent::__construct(
 			// This grid lists all review round files, but creates attachments
-			new ReviewGridDataProvider(SUBMISSION_FILE_ATTACHMENT, false, true),
+			new ReviewGridDataProvider(SUBMISSION_FILE_REVIEW_ATTACHMENT, false, true, true),
 			null,
 			FILE_GRID_ADD|FILE_GRID_DELETE|FILE_GRID_VIEW_NOTES|FILE_GRID_EDIT
 		);
@@ -41,12 +41,8 @@ class EditorSelectableReviewAttachmentsGridHandler extends SelectableFileListGri
 	 * @copydoc GridHandler::isDataElementSelected()
 	 */
 	function isDataElementSelected($gridDataElement) {
-		$file = $gridDataElement['submissionFile'];
-		switch ($file->getFileStage()) {
-			case SUBMISSION_FILE_ATTACHMENT: return true;
-			case SUBMISSION_FILE_REVIEW_FILE: return false;
-		}
-		return $file->getViewable();
+		// Nothing should be selected by default to avoid potential manipulation errors.
+		return false;
 	}
 
 	/**

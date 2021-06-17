@@ -114,8 +114,10 @@ class FileUploadWizardHandler extends Handler {
 			$this->addPolicy(new ReviewStageAccessPolicy($request, $args, $roleAssignments, 'submissionId', $stageId));
 			import('lib.pkp.classes.security.authorization.internal.ReviewRoundRequiredPolicy');
 			$this->addPolicy(new ReviewRoundRequiredPolicy($request, $args));
-			import('lib.pkp.classes.security.authorization.ReviewAssignmentFileWritePolicy');
-			$this->addPolicy(new ReviewAssignmentFileWritePolicy($request, $assocId));
+			if ($assocId !== -1) {
+				import('lib.pkp.classes.security.authorization.ReviewAssignmentFileWritePolicy');
+				$this->addPolicy(new ReviewAssignmentFileWritePolicy($request, $assocId));
+			}
 
 		// Allow uploading to a note
 		} elseif ($fileStage === SUBMISSION_FILE_QUERY) {
