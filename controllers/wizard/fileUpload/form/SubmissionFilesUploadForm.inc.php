@@ -52,7 +52,7 @@ class SubmissionFilesUploadForm extends PKPSubmissionFilesUploadBaseForm {
 		);
 
 		// Disable the genre selector for review file attachments
-		if ($fileStage == SUBMISSION_FILE_REVIEW_ATTACHMENT) {
+		if ($fileStage == SUBMISSION_FILE_REVIEW_ATTACHMENT || $fileStage == SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT) {
 			$this->setData('isReviewAttachment', true);
 		}
 	}
@@ -98,6 +98,7 @@ class SubmissionFilesUploadForm extends PKPSubmissionFilesUploadBaseForm {
 		$context = $router->getContext($request);
 		if (
 			$this->getData('fileStage') != SUBMISSION_FILE_REVIEW_ATTACHMENT and
+			$this->getData('fileStage') != SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT and
 			!$revisedFileId
 		) {
 			// Add an additional check for the genre to the form.

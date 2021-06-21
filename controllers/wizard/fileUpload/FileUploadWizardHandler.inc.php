@@ -114,10 +114,8 @@ class FileUploadWizardHandler extends Handler {
 			$this->addPolicy(new ReviewStageAccessPolicy($request, $args, $roleAssignments, 'submissionId', $stageId));
 			import('lib.pkp.classes.security.authorization.internal.ReviewRoundRequiredPolicy');
 			$this->addPolicy(new ReviewRoundRequiredPolicy($request, $args));
-			if ($assocId !== -1) {
-				import('lib.pkp.classes.security.authorization.ReviewAssignmentFileWritePolicy');
-				$this->addPolicy(new ReviewAssignmentFileWritePolicy($request, $assocId));
-			}
+			import('lib.pkp.classes.security.authorization.ReviewAssignmentFileWritePolicy');
+			$this->addPolicy(new ReviewAssignmentFileWritePolicy($request, $assocId));
 
 		// Allow uploading to a note
 		} elseif ($fileStage === SUBMISSION_FILE_QUERY) {
@@ -158,7 +156,7 @@ class FileUploadWizardHandler extends Handler {
 			$this->addPolicy(new SubmissionFileStageAccessPolicy($fileStage, SUBMISSION_FILE_ACCESS_MODIFY, 'api.submissionFiles.403.unauthorizedFileStageIdWrite'));
 
 			// Additional checks before uploading to a review file stage
-			if (in_array($fileStage, [SUBMISSION_FILE_REVIEW_REVISION, SUBMISSION_FILE_REVIEW_FILE, SUBMISSION_FILE_INTERNAL_REVIEW_REVISION, SUBMISSION_FILE_INTERNAL_REVIEW_FILE, SUBMISSION_FILE_ATTACHMENT])
+			if (in_array($fileStage, [SUBMISSION_FILE_REVIEW_REVISION, SUBMISSION_FILE_REVIEW_FILE, SUBMISSION_FILE_INTERNAL_REVIEW_REVISION, SUBMISSION_FILE_INTERNAL_REVIEW_FILE, SUBMISSION_FILE_ATTACHMENT, SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT])
 					|| $assocType === ASSOC_TYPE_REVIEW_ROUND) {
 				import('lib.pkp.classes.security.authorization.internal.ReviewRoundRequiredPolicy');
 				$this->addPolicy(new ReviewRoundRequiredPolicy($request, $args));

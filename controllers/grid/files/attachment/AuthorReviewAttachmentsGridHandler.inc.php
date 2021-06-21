@@ -24,7 +24,7 @@ class AuthorReviewAttachmentsGridHandler extends FileListGridHandler {
 		import('lib.pkp.controllers.grid.files.review.ReviewGridDataProvider');
 		// Pass in null stageId to be set in initialize from request var.
 		parent::__construct(
-			new ReviewGridDataProvider(SUBMISSION_FILE_REVIEW_ATTACHMENT, true),
+			new ReviewGridDataProvider(SUBMISSION_FILE_REVIEW_ATTACHMENT, true, false, array(SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT)),
 			null
 		);
 

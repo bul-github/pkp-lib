@@ -18,18 +18,18 @@ class ReviewGridDataProvider extends SubmissionFilesGridDataProvider {
 	/** @var boolean */
 	protected $_showAll;
 
-	/** @var boolean */
-	protected $_isAskingRevision;
+	/** @var array */
+	var $_additionalFileStageIds;
 
 	/**
 	 * Constructor
 	 * @copydoc SubmissionFilesGridDataProvider::__construct()
 	 * @param $showAll boolean True iff all review round files should be included.
-	 * @param $isAskingRevision boolean True when the redactor is asking author for revisions.
+	 * @param $additionalFileStageIds array Additional categories to show to the author.
 	 */
-	function __construct($fileStageId, $viewableOnly = false, $showAll = false, $isAskingRevision = false) {
+	function __construct($fileStageId, $viewableOnly = false, $showAll = false, $additionalFileStageIds = null) {
 		$this->_showAll = $showAll;
-		$this->_isAskingRevision = $isAskingRevision;
+		$this->_additionalFileStageIds = $additionalFileStageIds;
 		parent::__construct($fileStageId, $viewableOnly);
 	}
 
@@ -73,6 +73,9 @@ class ReviewGridDataProvider extends SubmissionFilesGridDataProvider {
 		];
 		if (!$this->_showAll) {
 			$params['fileStages'] = [(int) $this->getFileStage()];
+			if ($this->_additionalFileStageIds) {
+				$params['fileStages'] = array_merge($params['fileStages'], $this->_additionalFileStageIds);
+			}
 		}
 		$submissionFilesIterator = Services::get('submissionFile')->getMany($params);
 		return $this->prepareSubmissionFileData(iterator_to_array($submissionFilesIterator), $this->_viewableOnly, $filter);
@@ -103,17 +106,10 @@ class ReviewGridDataProvider extends SubmissionFilesGridDataProvider {
 		$submission = $this->getSubmission();
 		$reviewRound = $this->getReviewRound();
 
-		if ($this->_isAskingRevision) {
-			$assocId = -1;
-			$assocType = ASSOC_TYPE_REVIEW_ASSIGNMENT;
-		} else {
-			$assocId = null;
-			$assocType = null;
-		}
 		return new AddFileLinkAction(
 			$request, $submission->getId(), $this->getStageId(),
 			$this->getUploaderRoles(), $this->getFileStage(),
-			$assocType, $assocId, $reviewRound->getId()
+			null, null, $reviewRound->getId()
 		);
 	}
 

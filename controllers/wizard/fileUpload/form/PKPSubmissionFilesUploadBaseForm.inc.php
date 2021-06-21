@@ -143,7 +143,7 @@ class PKPSubmissionFilesUploadBaseForm extends Form {
 					throw new Exception('Can not request submission files for a review stage without specifying a review round.');
 				}
 				// Can only upload submission files, review files, review attachments, dependent files, or query attachments.
-				if (!in_array($this->getData('fileStage'), array(SUBMISSION_FILE_SUBMISSION, SUBMISSION_FILE_REVIEW_FILE, SUBMISSION_FILE_INTERNAL_REVIEW_FILE, SUBMISSION_FILE_REVIEW_ATTACHMENT, SUBMISSION_FILE_REVIEW_REVISION, SUBMISSION_FILE_INTERNAL_REVIEW_REVISION, SUBMISSION_FILE_QUERY, SUBMISSION_FILE_DEPENDENT, SUBMISSION_FILE_ATTACHMENT))) {
+				if (!in_array($this->getData('fileStage'), array(SUBMISSION_FILE_SUBMISSION, SUBMISSION_FILE_REVIEW_FILE, SUBMISSION_FILE_INTERNAL_REVIEW_FILE, SUBMISSION_FILE_REVIEW_ATTACHMENT, SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT, SUBMISSION_FILE_REVIEW_REVISION, SUBMISSION_FILE_INTERNAL_REVIEW_REVISION, SUBMISSION_FILE_QUERY, SUBMISSION_FILE_DEPENDENT, SUBMISSION_FILE_ATTACHMENT))) {
 					throw new Exception('The file stage is not valid for the review stage.');
 				}
 

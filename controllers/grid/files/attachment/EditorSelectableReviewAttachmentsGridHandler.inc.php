@@ -23,7 +23,7 @@ class EditorSelectableReviewAttachmentsGridHandler extends SelectableFileListGri
 		// Pass in null stageId to be set in initialize from request var.
 		parent::__construct(
 			// This grid lists all review round files, but creates attachments
-			new ReviewGridDataProvider(SUBMISSION_FILE_REVIEW_ATTACHMENT, false, true, true),
+			new ReviewGridDataProvider(SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT, false, true),
 			null,
 			FILE_GRID_ADD|FILE_GRID_DELETE|FILE_GRID_VIEW_NOTES|FILE_GRID_EDIT
 		);

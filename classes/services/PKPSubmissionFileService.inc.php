@@ -656,6 +656,7 @@ class PKPSubmissionFileService implements EntityPropertyInterface, EntityReadInt
 			if ($action === SUBMISSION_FILE_ACCESS_READ || $hasEditorialAssignment) {
 				$allowedFileStages[] = SUBMISSION_FILE_REVIEW_REVISION;
 				$allowedFileStages[] = SUBMISSION_FILE_ATTACHMENT;
+				$allowedFileStages[] = SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT;
 			}
 			// Authors can never access review files
 			if ($hasEditorialAssignment) {
@@ -704,6 +705,7 @@ class PKPSubmissionFileService implements EntityPropertyInterface, EntityReadInt
 			SUBMISSION_FILE_NOTE,
 			SUBMISSION_FILE_REVIEW_FILE,
 			SUBMISSION_FILE_REVIEW_ATTACHMENT,
+			SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT,
 			SUBMISSION_FILE_FINAL,
 			SUBMISSION_FILE_COPYEDIT,
 			SUBMISSION_FILE_PROOF,
@@ -761,6 +763,7 @@ class PKPSubmissionFileService implements EntityPropertyInterface, EntityReadInt
 			case SUBMISSION_FILE_REVIEW_FILE:
 			case SUBMISSION_FILE_INTERNAL_REVIEW_FILE:
 			case SUBMISSION_FILE_REVIEW_ATTACHMENT:
+			case SUBMISSION_FILE_REVIEW_EDITOR_ATTACHMENT:
 			case SUBMISSION_FILE_REVIEW_REVISION:
 			case SUBMISSION_FILE_ATTACHMENT:
 			case SUBMISSION_FILE_INTERNAL_REVIEW_REVISION:
