@@ -63,7 +63,7 @@ class LogMigration extends Migration {
 			$table->text('recipients')->nullable();
 			$table->text('cc_recipients')->nullable();
 			$table->text('bcc_recipients')->nullable();
-			$table->string('subject', 255)->nullable();
+			$table->string('subject', 510)->nullable();
 			$table->text('body')->nullable();
 			$table->index(['assoc_type', 'assoc_id'], 'email_log_assoc');
 		});

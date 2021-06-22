@@ -44,7 +44,7 @@
 			<col>assoc_id</col>
 		</index>
 	</table>
-	
+
 	<!--
 	  *
 	  * TABLE event_log_settings
@@ -100,7 +100,7 @@
 		<field name="recipients" type="X"/>
 		<field name="cc_recipients" type="X"/>
 		<field name="bcc_recipients" type="X"/>
-		<field name="subject" type="C2" size="255"/>
+		<field name="subject" type="C2" size="510"/>
 		<field name="body" type="X"/>
 		<descr>A log of all emails sent out related to an object.</descr>
 		<index name="email_log_assoc">
@@ -108,7 +108,7 @@
 			<col>assoc_id</col>
 		</index>
 	</table>
-	
+
 	<!--
 	  *
 	  * TABLE email_log_users

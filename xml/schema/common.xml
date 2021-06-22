@@ -199,6 +199,7 @@
 		<field name="disabled_reason" type="X"/>
 		<field name="inline_help" type="I1" />
 		<field name="ldap" type="C2" size="32"/>
+		<field name="status_id" type="I1" />
 		<descr>User authentication credentials and profile data.</descr>
 		<index name="users_username">
 			<col>username</col>
@@ -208,6 +209,37 @@
 			<col>email</col>
 			<UNIQUE />
 		</index>
+	</table>
+
+	<!--
+	  *
+	  * TABLE statuses
+	  *
+	  -->
+	<table name="statuses">
+		<field name="status_id" type="I1">
+			<KEY />
+			<AUTOINCREMENT />
+		</field>
+		<field name="locale_key" type="C2" size="100"/>
+		<field name="seq" type="I1" />
+		<descr>User statuses for UL.</descr>
+	</table>
+
+	<!--
+	  *
+	  * TABLE private_notes
+	  *
+	  -->
+	<table name="private_notes">
+		<field name="private_note_id" type="I8">
+			<KEY />
+			<AUTOINCREMENT />
+		</field>
+		<field name="context_id" type="I8" />
+		<field name="user_id" type="I8" />
+		<field name="note" type="X"/>
+		<descr>User private notes.</descr>
 	</table>
 
 	<!--
