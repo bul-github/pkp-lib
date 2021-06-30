@@ -247,7 +247,7 @@ class UserDAO extends DAO {
 	 * @param $user User
 	 */
 	function fetchPrivateNoteData($user) {
-		$context = Application::getRequest()->getContext();
+		$context = Application::get()->getRequest()->getContext();
 
 		if (!$context) {
 			return;
@@ -272,7 +272,7 @@ class UserDAO extends DAO {
 	 * @param $user User
 	 */
 	function updatePrivateNoteData($user) {
-		$context = Application::getRequest()->getContext();
+		$context = Application::get()->getRequest()->getContext();
 
 		if (!$context) {
 			return;
