@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-15T13:36:56-07:00\n"
-"PO-Revision-Date: 2020-12-18 16:52+0000\n"
-"Last-Translator: Marie-Hélène Vézina [UdeMontréal] <marie-"
-"helene.vezina@umontreal.ca>\n"
+"PO-Revision-Date: 2021-06-22 20:34+0000\n"
+"Last-Translator: Nicolas Dickner <dickner.nicolas@uqam.ca>\n"
 "Language-Team: French (Canada) <http://translate.pkp.sfu.ca/projects/pkp-lib/"
 "manager/fr_CA/>\n"
 "Language: fr_CA\n"
@@ -638,6 +637,12 @@ msgstr "Limiter les résultats selon le pays, la région ou la ville."
 msgid "manager.affiliationAndSupport"
 msgstr "Organisme subventionnaire"
 
+msgid "manager.setup.publishing"
+msgstr "Renseignements au sujet de la publication"
+
+msgid "manager.setup.publishingDescription"
+msgstr "Le nom de l'organisation qui publie la revue pourrait être inclus dans les métadonnées fournies aux agents d'achivage externes."
+
 msgid "manager.setup.additionalContent"
 msgstr "Contenu additionnel"
 
@@ -1027,9 +1032,6 @@ msgstr "Le plugiciel existe déjà mais il est plus récent que la version insta
 
 msgid "manager.plugins.settings"
 msgstr "Paramètres"
-
-msgid "manager.plugins.tarCommandNotFound"
-msgstr "La commande tar n'est pas disponible. Veuillez la configurer correctement dans votre fichier « config.inc.php »."
 
 msgid "manager.plugins.upgrade"
 msgstr "Mettre le plugiciel à jour"
@@ -2129,11 +2131,11 @@ msgstr "M'envoyer une copie de ce courriel à {$email}."
 
 msgid "manager.setup.notifyUsers.description"
 msgstr ""
-"Sélectionner les utilisateurs-trices qui doivent recevoir votre notification "
-"par courriel."
+"Sélectionner les utilisateurs-trices qui doivent recevoir vos avis par "
+"courriel."
 
 msgid "manager.setup.notifyUsers"
-msgstr "Aviser"
+msgstr "Avis"
 
 msgid "manager.setup.disableSubmissions"
 msgstr "Désactiver les soumissions"
@@ -2143,6 +2145,61 @@ msgstr "Générateur de rapports personnalisés"
 
 msgid "manager.people.signedInAs"
 msgstr "Vous êtes actuellement connecté-e en tant que {$username}"
+
+msgid "notification.localeSettingsCannotBeSaved"
+msgstr ""
+"Le paramètre de langue n'a pas pu être sauvegardé. Au moins une langue doit "
+"être activée pour chaque option"
+
+msgid "manager.emails.otherTemplates"
+msgstr "Autres modèles"
+
+msgid "plugins.importexport.common.cliError"
+msgstr "ERREUR :"
+
+msgid "plugins.importexport.common.error.unknownContext"
+msgstr "Le chemin « {$contextPath} » de la revue n'existe pas."
+
+msgid "manager.setup.notifications.copySubmissionAckPrimaryContact.disabled"
+msgstr "Non"
+
+msgid "manager.setup.notifications.copySubmissionAckPrimaryContact.enabled"
+msgstr "Oui, envoyer une copie à {$email}"
+
+msgid "manager.setup.notifications.copySubmissionAckPrimaryContact"
+msgstr "Aviser le contact principal"
+
+msgid "manager.setup.submissionsNotifications"
+msgstr "Avis"
+
+msgid "plugins.importexport.native.export.completed.downloadFile"
+msgstr "Télécharger le fichier exporté avec le bouton ci-dessous."
+
+msgid "plugins.importexport.native.export.completed"
+msgstr "Exportation complétée avec succès."
+
+msgid "plugins.importexport.native.export.download.results"
+msgstr "Télécharger le fichier exporté"
+
+msgid "plugins.importexport.native.processFailed"
+msgstr ""
+"Le processus a échoué. Veuillez consulter les erreurs ou avertissements ci-"
+"dessous."
+
+msgid "plugins.importexport.common.error.userGroupMissing"
+msgstr "Groupe d'utilisateurs-trices manquant pour le nom d'usager {$param}"
+
+msgid "plugins.importexport.common.id"
+msgstr "Id : {$id}"
+
+msgid "manager.setup.notifications.copySubmissionAckAddress.invalid"
+msgstr "Un ou plusieurs de ces adresses de courriel sont invalides."
+
+msgid "manager.setup.notifications.copySubmissionAckAddress.description"
+msgstr ""
+"Une copie de l'accusé de réception sera envoyée à toute adresse de courriel "
+"saisie ici. Les adresses doivent être séparées par une virgule. Exemple : "
+"un@exemple.com,deux@exemple.com"
 
 msgid "manager.setup.submissionOptions.reminders.submit"
 msgstr "Rappels automatiques par courriel pour les auteurs"
