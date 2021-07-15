@@ -73,7 +73,11 @@ class AccessKeyDAO extends DAO {
 			$paramArray
 		);
 		$row = $result->current();
-		return $row ? $this->_returnAccessKeyFromRow((array) $row) : null;
+		$accessKey = null;
+		if ($row) {
+			$accessKey = $this->_returnAccessKeyFromRow((array) $row);
+		}
+		return $accessKey;
 	}
 
 	/**
