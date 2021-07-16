@@ -102,18 +102,21 @@ function fatalError($reason) {
 		}
 	}
 
-	// Determine the application name. Use defensive code so that we
-	// can handle errors during early application initialization.
-	$application = null;
-	if (class_exists('Registry')) {
-		$application = Registry::get('application', true, null);
-	}
-	$applicationName = '';
-	if (!is_null($application)) {
-		$applicationName = $application->getName().': ';
-	}
+	$log404 = Config::getVar('debug', 'log_404');
+	if ($log404) {
+		// Determine the application name. Use defensive code so that we
+		// can handle errors during early application initialization.
+		$application = null;
+		if (class_exists('Registry')) {
+			$application = Registry::get('application', true, null);
+		}
+		$applicationName = '';
+		if (!is_null($application)) {
+			$applicationName = $application->getName().': ';
+		}
 
-	error_log($applicationName.$reason);
+		error_log($applicationName.$reason);
+	}
 
 	if (defined('DONT_DIE_ON_ERROR') && DONT_DIE_ON_ERROR == true) {
 		// trigger an error to be catched outside the application
@@ -312,11 +315,11 @@ function ucfirst_codesafe($str) {
 }
 
 /**
- * Helper function to define custom autoloader 
+ * Helper function to define custom autoloader
  * @param string $rootPath
  * @param string $prefix
  * @param string $class
- * 
+ *
  * @return void
  */
 function customAutoload($rootPath, $prefix, $class) {
