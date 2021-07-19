@@ -72,6 +72,7 @@ class EditorDecisionWithEmailForm extends EditorDecisionForm {
 		$email->assignParams([
 			'authorName' => $submission->getAuthorString(),
 			'submissionUrl' => $submissionUrl,
+			'editorialContactSignature' => $user->getContactSignature(),
 		]);
 		$email->replaceParams();
 
@@ -336,14 +337,10 @@ class EditorDecisionWithEmailForm extends EditorDecisionForm {
 	 * @return array
 	 */
 	function _getAllowedVariables($request) {
-		$router = $request->getRouter();
-		$dispatcher = $router->getDispatcher();
 		$submission = $this->getSubmission();
-		$user = $request->getUser();
 		return [
 			'submissionUrl' => __('common.url'),
 			'contextName' => $request->getContext()->getLocalizedName(),
-			'editorialContactSignature' => strip_tags($user->getContactSignature(), "<br>"),
 			'submissionTitle' => strip_tags($submission->getLocalizedTitle()),
 			'authorName' => strip_tags($submission->getAuthorString()),
 		];
@@ -357,7 +354,6 @@ class EditorDecisionWithEmailForm extends EditorDecisionForm {
 	function _getAllowedVariablesType() {
 		return [
 			'contextName' => INSERT_TAG_VARIABLE_TYPE_PLAIN_TEXT,
-			'editorialContactSignature' => INSERT_TAG_VARIABLE_TYPE_PLAIN_TEXT,
 			'submissionTitle' => INSERT_TAG_VARIABLE_TYPE_PLAIN_TEXT,
 			'authorName' => INSERT_TAG_VARIABLE_TYPE_PLAIN_TEXT,
 		];
