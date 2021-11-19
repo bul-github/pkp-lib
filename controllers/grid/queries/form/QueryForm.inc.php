@@ -246,7 +246,7 @@ class QueryForm extends Form {
 					}
 				}
 
-				// if current user is an anonymous reviewer, filter out authors
+				// if current user is an anonymous reviewer, filter out authors AND other reviewers
 				foreach ($reviewAssignments as $reviewAssignment) {
 					if ($reviewAssignment->getReviewerId() == $user->getId() ){
 						if ($reviewAssignment->getReviewMethod() != SUBMISSION_REVIEW_METHOD_OPEN){
@@ -254,15 +254,25 @@ class QueryForm extends Form {
 							while ($assignment = $authorAssignments->next()) {
 								$excludeUsers[] = $assignment->getUserId();
 							}
+							$reviewerAssignments = $stageAssignmentDao->getBySubmissionAndRoleId($query->getAssocId(), ROLE_ID_REVIEWER);
+							while ($assignment = $reviewerAssignments->next()) {
+								$excludeUsers[] = $assignment->getUserId();
+							}
 						}
 					}
 				}
 
-				// if current user is author, add open reviewers who have accepted the request
+				// if current user is author, add open reviewers who have accepted the request AND exclude anonymous reviewer
 				if (array_intersect(array(ROLE_ID_AUTHOR), $assignedRoles)) {
 					foreach ($reviewAssignments as $reviewAssignment) {
 						if ($reviewAssignment->getReviewMethod() == SUBMISSION_REVIEW_METHOD_OPEN && $reviewAssignment->getDateConfirmed()){
 							$includeUsers[] = $reviewAssignment->getReviewerId();
+						}
+						if ($reviewAssignment->getReviewMethod() != SUBMISSION_REVIEW_METHOD_OPEN){
+							$reviewerAssignments = $stageAssignmentDao->getBySubmissionAndRoleId($query->getAssocId(), ROLE_ID_REVIEWER);
+							while ($assignment = $reviewerAssignments->next()) {
+								$excludeUsers[] = $assignment->getUserId();
+							}
 						}
 					}
 				}
