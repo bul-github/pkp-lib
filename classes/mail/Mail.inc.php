@@ -486,6 +486,9 @@ class Mail extends DataObject {
 		$mailer->Encoding = 'base64';
 		if (Config::getVar('email', 'smtp')) {
 			$mailer->IsSMTP();
+			$mailer->SMTPAuth = false;
+			$mailer->SMTPSecure = false;
+			$mailer->SMTPAutoTLS = false;
 			$mailer->Port = Config::getVar('email', 'smtp_port');
 			if (($s = Config::getVar('email', 'smtp_auth')) != '') {
 				$mailer->SMTPSecure = $s;
